@@ -3,10 +3,12 @@ package object.store.daos;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import java.util.Objects;
 import java.util.UUID;
+import javassist.ClassPool;
 import object.store.entities.TypeDocument;
 import object.store.entities.models.KeyDefinition;
 import object.store.repositories.TypeRepository;
 import org.bson.Document;
+import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.schema.JsonSchemaProperty;
@@ -28,6 +30,10 @@ public record TypeDao(TypeRepository typeRepository, ReactiveMongoTemplate mongo
     return typeRepository.findById(id);
   }
 
+  public Mono<TypeDocument> getByName(String name){
+    return typeRepository.findByName(name);
+  }
+
   public Mono<TypeDocument> createType(TypeDocument document){
     document.setId(UUID.randomUUID().toString());
     return typeRepository.save(document);
@@ -43,9 +49,11 @@ public record TypeDao(TypeRepository typeRepository, ReactiveMongoTemplate mongo
       }
       MongoJsonSchemaBuilder schema = MongoJsonSchema.builder();
       schema.additionalProperties(false);
-      schema.property(JsonSchemaProperty.objectId("_id"));
+      schema.property(JsonSchemaProperty.string("_id"));
       for (KeyDefinition keyDefinition : type.getKeyDefinitions()) {
-        schema.property(JsonSchemaProperty.string(keyDefinition.getKey()));
+        if(!keyDefinition.getKey().equals("id")) {
+          schema.property(JsonSchemaProperty.string(keyDefinition.getKey()));
+        }
       }
       CollectionOptions options = CollectionOptions
           .empty()

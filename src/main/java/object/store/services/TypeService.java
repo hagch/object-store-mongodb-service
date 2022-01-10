@@ -14,6 +14,7 @@ public record TypeService(TypeDao typeDao, TypeMapper mapper) {
     return typeDao.getById(id).map(mapper::entityToApi);
   }
 
+  public Mono<Type> getByName(String name) { return typeDao.getByName(name).map(mapper::entityToApi);}
   public Mono<Flux<Type>> getAll(){
     return Mono.just(typeDao.getAll().map(mapper::entityToApi));
   }
