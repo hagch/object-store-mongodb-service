@@ -12,7 +12,8 @@ public class TypeDocument {
   private String id;
   @Indexed(unique = true)
   private String name;
-  private KeyDefinition[] keyDefinitions;
+  private boolean hasAdditionalProperties;
+  private KeyDefinition[] backendKeyDefinitions;
 
   public String getId() {
     return id;
@@ -30,11 +31,19 @@ public class TypeDocument {
     this.name = name;
   }
 
-  public KeyDefinition[] getKeyDefinitions() {
-    return keyDefinitions;
+  public boolean isHasAdditionalProperties() {
+    return hasAdditionalProperties;
   }
 
-  public void setKeyDefinitions(KeyDefinition[] keyDefinitions) {
-    this.keyDefinitions = keyDefinitions;
+  public void setHasAdditionalProperties(boolean hasAdditionalProperties) {
+    this.hasAdditionalProperties = hasAdditionalProperties;
+  }
+
+  public KeyDefinition[] getBackendKeyDefinitions() {
+    return backendKeyDefinitions;
+  }
+
+  public void setBackendKeyDefinitions(KeyDefinition[] backendKeyDefinitions) {
+    this.backendKeyDefinitions = backendKeyDefinitions;
   }
 }

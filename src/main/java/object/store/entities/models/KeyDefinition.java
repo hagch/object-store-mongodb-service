@@ -1,8 +1,10 @@
 package object.store.entities.models;
 
+import object.store.gen.mongodbservice.models.BackendKeyType;
+
 public class KeyDefinition {
   String key;
-  String type;
+  BackendKeyType type;
 
   public String getKey() {
     return key;
@@ -12,11 +14,11 @@ public class KeyDefinition {
     this.key = key;
   }
 
-  public String getType() {
+  public BackendKeyType getType() {
     return type;
   }
 
-  public void setType(String type) {
+  public void setType(BackendKeyType type) {
     this.type = type;
   }
 }

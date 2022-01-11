@@ -115,17 +115,32 @@ components:
           type: string
         name:
           type: string
-        keyDefinitions:
+        additionalProperties:
+          type: boolean
+        backendKeyDefinitions:
           type: array
           items:
-            $ref: '#/components/schemas/KeyDefinition'
-    KeyDefinition:
+            $ref: '#/components/schemas/BackendKeyDefinition'
+    BackendKeyType:
+      type: string
+      enum:
+        - primaryKey
+        - double
+        - string
+        - boolean
+        - long
+        - integer
+        - timestamp
+        - date
+        - object
+        - array
+    BackendKeyDefinition:
       type: object
       properties:
         key:
           type: string
         type:
-          type: string
+          $ref: '#/components/schemas/BackendKeyType'
 
   responses:
     TypesResponse:

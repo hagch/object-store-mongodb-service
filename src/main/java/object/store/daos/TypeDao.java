@@ -4,8 +4,10 @@ import com.mongodb.reactivestreams.client.MongoCollection;
 import java.util.Objects;
 import java.util.UUID;
 import javassist.ClassPool;
+import object.store.constants.MongoConstants;
 import object.store.entities.TypeDocument;
 import object.store.entities.models.KeyDefinition;
+import object.store.gen.mongodbservice.models.BackendKeyType;
 import object.store.repositories.TypeRepository;
 import org.bson.Document;
 import org.springframework.data.domain.Example;
@@ -44,15 +46,31 @@ public record TypeDao(TypeRepository typeRepository, ReactiveMongoTemplate mongo
   }
   public Mono<MongoCollection<Document>> createCollectionForType(String id) {
     return getById(id).flatMap( type -> {
-      if (Objects.nonNull(type.getKeyDefinitions()) && type.getKeyDefinitions().length == 0) {
+      if (Objects.nonNull(type.getBackendKeyDefinitions()) && type.getBackendKeyDefinitions().length == 0) {
         return Mono.error(new IllegalArgumentException());
       }
       MongoJsonSchemaBuilder schema = MongoJsonSchema.builder();
-      schema.additionalProperties(false);
-      schema.property(JsonSchemaProperty.string("_id"));
-      for (KeyDefinition keyDefinition : type.getKeyDefinitions()) {
-        if(!keyDefinition.getKey().equals("id")) {
-          schema.property(JsonSchemaProperty.string(keyDefinition.getKey()));
+      schema.additionalProperties(type.isHasAdditionalProperties());
+      schema.property(JsonSchemaProperty.string(MongoConstants.ID_NAME));
+      for (KeyDefinition keyDefinition : type.getBackendKeyDefinitions()) {
+        if(!BackendKeyType.PRIMARYKEY.equals(keyDefinition.getType())) {
+          String key = keyDefinition.getKey();
+          JsonSchemaProperty property = switch(keyDefinition.getType()){
+            case DATE -> JsonSchemaProperty.date(key);
+            case TIMESTAMP -> JsonSchemaProperty.timestamp(key);
+            case DOUBLE -> JsonSchemaProperty.decimal128(key);
+            case INTEGER -> JsonSchemaProperty.int32(key);
+            case LONG -> JsonSchemaProperty.int64(key);
+            case STRING -> JsonSchemaProperty.string(key);
+            case BOOLEAN -> JsonSchemaProperty.bool(key);
+            case OBJECT -> JsonSchemaProperty.object(key);
+            case ARRAY -> JsonSchemaProperty.array(key);
+            default -> null;
+          };
+          if(property == null){
+            return Mono.error(new IllegalArgumentException());
+          }
+          schema.property(property);
         }
       }
       CollectionOptions options = CollectionOptions
