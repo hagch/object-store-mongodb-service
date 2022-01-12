@@ -82,27 +82,6 @@ paths:
           description: Type Not Found
         '500':
           description: InternalServerError
-  '/types/{typeId}/collections':
-    post:
-      summary: Create Collection for specified Type
-      operationId: createCollectionForType
-      parameters:
-        - in: path
-          name: typeId
-          required: true
-          schema:
-            type: string
-      responses:
-        '201':
-          description: Accepted
-        '401':
-          description: Unauthorized
-        '404':
-          description: Type Not Found
-        '409':
-          description: Already Exists
-        '500':
-          description: InternalServerError
 
 
 components:

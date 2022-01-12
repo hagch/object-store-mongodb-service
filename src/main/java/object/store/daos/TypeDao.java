@@ -44,8 +44,8 @@ public record TypeDao(TypeRepository typeRepository, ReactiveMongoTemplate mongo
   public Mono<TypeDocument> updateTypeById(TypeDocument document){
     return typeRepository.save(document);
   }
-  public Mono<MongoCollection<Document>> createCollectionForType(String id) {
-    return getById(id).flatMap( type -> {
+  public Mono<TypeDocument> createCollectionForType(TypeDocument document) {
+    return Mono.just(document).flatMap( type -> {
       if (Objects.nonNull(type.getBackendKeyDefinitions()) && type.getBackendKeyDefinitions().length == 0) {
         return Mono.error(new IllegalArgumentException());
       }
@@ -78,7 +78,7 @@ public record TypeDao(TypeRepository typeRepository, ReactiveMongoTemplate mongo
           .validator(Validator.schema(schema.build()))
           .strictValidation()
           .failOnValidationError();
-      return mongoTemplate.createCollection(type.getName(), options);
+      return mongoTemplate.createCollection(type.getName(), options).thenReturn(type);
     });
   }
 

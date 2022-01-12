@@ -14,11 +14,6 @@ import reactor.core.publisher.Mono;
 public record TypesController(TypeService typeService, TypeMapper mapper) implements TypesApi {
 
   @Override
-  public Mono<ResponseEntity<Void>> createCollectionForType(String typeId, ServerWebExchange exchange) {
-    return typeService.createCollectionForType(typeId).map(ResponseEntity::ok);
-  }
-
-  @Override
   public Mono<ResponseEntity<Type>> createType(Mono<Type> type, ServerWebExchange exchange) {
     return type.flatMap(typeService::createType).map(ResponseEntity::ok);
   }

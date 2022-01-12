@@ -1,8 +1,11 @@
 package object.store.services;
 
+import com.mongodb.reactivestreams.client.MongoCollection;
 import object.store.daos.TypeDao;
+import object.store.entities.TypeDocument;
 import object.store.gen.mongodbservice.models.Type;
 import object.store.mappers.TypeMapper;
+import org.bson.Document;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,14 +23,10 @@ public record TypeService(TypeDao typeDao, TypeMapper mapper) {
   }
 
   public Mono<Type> createType(Type document){
-    return typeDao.createType(mapper.apiToEntity(document)).map(mapper::entityToApi);
+    return typeDao.createType(mapper.apiToEntity(document)).flatMap(typeDao::createCollectionForType).map(mapper::entityToApi);
   }
 
   public Mono<Type> updateById(Type document){
     return typeDao.updateTypeById(mapper.apiToEntity(document)).map(mapper::entityToApi);
-  }
-
-  public Mono<Void> createCollectionForType(String id){
-    return typeDao.createCollectionForType(id).then();
   }
 }
