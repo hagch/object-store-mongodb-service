@@ -95,7 +95,8 @@
 							<goal>generate</goal>
 						</goals>
 						<configuration>
-							<inputSpec>./mongodb-service.yaml</inputSpec>
+							<inputSpec>https://raw.githubusercontent.com/hagch/object-store-configuration-service/master/database-service.yaml</inputSpec>
+							<auth>Authorization: token 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</auth>
 							<generatorName>spring</generatorName>
 							<apiPackage>object.store.gen.mongodbservice.apis</apiPackage>
 							<modelPackage>object.store.gen.mongodbservice.models</modelPackage>
