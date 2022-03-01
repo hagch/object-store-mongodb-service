@@ -1,5 +1,6 @@
 package object.store.entities;
 
+import java.util.List;
 import object.store.entities.models.KeyDefinition;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -13,7 +14,7 @@ public class TypeDocument {
   @Indexed(unique = true)
   private String name;
   private boolean hasAdditionalProperties;
-  private KeyDefinition[] backendKeyDefinitions;
+  private List<KeyDefinition> backendKeyDefinitions;
 
   public String getId() {
     return id;
@@ -39,11 +40,11 @@ public class TypeDocument {
     this.hasAdditionalProperties = hasAdditionalProperties;
   }
 
-  public KeyDefinition[] getBackendKeyDefinitions() {
+  public List<KeyDefinition> getBackendKeyDefinitions() {
     return backendKeyDefinitions;
   }
 
-  public void setBackendKeyDefinitions(KeyDefinition[] backendKeyDefinitions) {
+  public void setBackendKeyDefinitions(List<KeyDefinition> backendKeyDefinitions) {
     this.backendKeyDefinitions = backendKeyDefinitions;
   }
 }
