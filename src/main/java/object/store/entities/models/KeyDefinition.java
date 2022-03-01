@@ -4,6 +4,7 @@ import java.util.List;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
 public class KeyDefinition {
+
   String key;
   BackendKeyType type;
   private Boolean isNullAble;

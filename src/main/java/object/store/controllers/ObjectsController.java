@@ -17,25 +17,25 @@ public record ObjectsController(ObjectsService objectsService) implements Object
   public Mono<ResponseEntity<Map<String, Object>>> createObjectByTypeIdentifier(Identifier identifierType,
       String identifier,
       Mono<Map<String, Object>> requestBody, ServerWebExchange exchange) {
-    return objectsService.createObjectByTypeIdentifier(identifierType,identifier,requestBody).map(ResponseEntity::ok);
+    return objectsService.createObjectByTypeIdentifier(identifierType, identifier, requestBody).map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Map<String, Object>>> getObjectByTypeIdentifier(Identifier identifierType,
       String identifier, String objectId, ServerWebExchange exchange) {
-    return objectsService.getObjectByTypeIdentifier(identifierType,identifier,objectId).map(ResponseEntity::ok);
+    return objectsService.getObjectByTypeIdentifier(identifierType, identifier, objectId).map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Flux<Map<String, Object>>>> getObjectsByTypeIdentifier(Identifier identifierType,
       String identifier,
       ServerWebExchange exchange) {
-    return Mono.just(objectsService.getObjectsByTypeIdentifier(identifierType,identifier)).map(ResponseEntity::ok);
+    return Mono.just(objectsService.getObjectsByTypeIdentifier(identifierType, identifier)).map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Map<String, Object>>> updateObjectByTypeIdentifier(Identifier identifierType,
       String identifier, String objectId, Mono<Map<String, Object>> requestBody, ServerWebExchange exchange) {
-    return objectsService.updateObjectByTypeIdentifier(identifierType,identifier,requestBody).map(ResponseEntity::ok);
+    return objectsService.updateObjectByTypeIdentifier(identifierType, identifier, requestBody).map(ResponseEntity::ok);
   }
 }

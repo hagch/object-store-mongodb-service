@@ -8,5 +8,6 @@ import org.mapstruct.Mapper;
 public interface TypeMapper {
 
   Type entityToApi(TypeDocument document);
+
   TypeDocument apiToEntity(Type type);
 }
