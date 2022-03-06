@@ -19,6 +19,11 @@ public record TypesController(TypeService typeService, TypeMapper mapper) implem
   }
 
   @Override
+  public Mono<ResponseEntity<Void>> deleteType(String id, ServerWebExchange exchange) {
+    return typeService.delete(id).map(ResponseEntity::ok);
+  }
+
+  @Override
   public Mono<ResponseEntity<Type>> getTypeById(String id, ServerWebExchange exchange) {
     return typeService.getById(id).map(ResponseEntity::ok);
   }

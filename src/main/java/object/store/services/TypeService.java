@@ -30,4 +30,8 @@ public record TypeService(TypeDao typeDao, TypeMapper mapper) {
   public Mono<Type> updateById(Type document) {
     return typeDao.updateTypeById(mapper.apiToEntity(document)).map(mapper::entityToApi);
   }
+
+  public Mono<Void> delete(String id) {
+    return typeDao.delete(id);
+  }
 }
