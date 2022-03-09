@@ -9,8 +9,7 @@ services:
             - MONGO_DB_USERNAME=alanda
             - MONGO_DB_PASSWORD=sw55amp
         ports:
-            - 27017:27017
-        restart: unless-stopped
+            - "27017:27017"
     mongo-express:
         image: mongo-express
         container_name: mongo-express
@@ -25,7 +24,6 @@ services:
             - mongodb
         ports:
             - 8081:8081
-        restart: unless-stopped
     object-store-db:
         restart: always
         build: ./
@@ -35,7 +33,7 @@ services:
         depends_on:
             -   mongodb
         ports:
-            - 8080:8080
+            - "8080:8080"
         environment:
             - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
             - SPRING_DATA_MONGODB_HOST=mongodb
