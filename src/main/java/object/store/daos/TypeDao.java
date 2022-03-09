@@ -2,9 +2,11 @@ package object.store.daos;
 
 import java.util.Objects;
 import java.util.UUID;
-import object.store.entities.TypeDocument;
+import object.store.daos.entities.TypeDocument;
+import object.store.mappers.TypeMapper;
 import object.store.repositories.TypeRepository;
 import object.store.services.MongoJsonSchemaService;
+import object.store.services.dtos.TypeDto;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
@@ -13,30 +15,30 @@ import reactor.core.publisher.Mono;
 
 @Service
 public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mongoJsonSchemaService,
-                      ReactiveMongoTemplate mongoTemplate) {
+                      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper) {
 
-  public Flux<TypeDocument> getAll() {
-    return typeRepository.findAll();
+  public Flux<TypeDto> getAll() {
+    return typeRepository.findAll().map(mapper::entityToDto);
   }
 
-  public Mono<TypeDocument> getById(String id) {
-    return typeRepository.findById(id);
+  public Mono<TypeDto> getById(String id) {
+    return typeRepository.findById(id).map(mapper::entityToDto);
   }
 
-  public Mono<TypeDocument> getByName(String name) {
-    return typeRepository.findByName(name);
+  public Mono<TypeDto> getByName(String name) {
+    return typeRepository.findByName(name).map(mapper::entityToDto);
   }
 
-  public Mono<TypeDocument> createType(TypeDocument document) {
+  public Mono<TypeDto> createType(TypeDto document) {
     document.setId(UUID.randomUUID().toString());
-    return typeRepository.save(document);
+    return typeRepository.save(mapper.dtoToEntity(document)).map(mapper::entityToDto);
   }
 
-  public Mono<TypeDocument> updateTypeById(TypeDocument document) {
-    return typeRepository.save(document);
+  public Mono<TypeDto> updateTypeById(TypeDto document) {
+    return typeRepository.save(mapper.dtoToEntity(document)).map(mapper::entityToDto);
   }
 
-  public Mono<TypeDocument> createCollectionForType(TypeDocument document) {
+  public Mono<TypeDto> createCollectionForType(TypeDto document) {
     return Mono.just(document).flatMap(type -> {
       if (Objects.isNull(type.getBackendKeyDefinitions()) || type.getBackendKeyDefinitions().size() == 0) {
         return Mono.error(new IllegalArgumentException());

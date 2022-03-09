@@ -1,6 +1,6 @@
 package object.store.repositories;
 
-import object.store.entities.TypeDocument;
+import object.store.daos.entities.TypeDocument;
 import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;

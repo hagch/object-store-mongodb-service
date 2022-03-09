@@ -1,15 +1,15 @@
-package object.store.entities.models;
+package object.store.services.dtos.models;
 
 import java.util.List;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
-public class KeyDefinition {
+public class KeyDefinitionDto {
 
   String key;
   BackendKeyType type;
   private Boolean isNullAble;
   private BackendKeyType primitiveArrayType;
-  private List<KeyDefinition> properties;
+  private List<KeyDefinitionDto> properties;
 
   public String getKey() {
     return key;
@@ -43,11 +43,11 @@ public class KeyDefinition {
     this.primitiveArrayType = primitiveArrayType;
   }
 
-  public List<KeyDefinition> getProperties() {
+  public List<KeyDefinitionDto> getProperties() {
     return properties;
   }
 
-  public void setProperties(List<KeyDefinition> properties) {
+  public void setProperties(List<KeyDefinitionDto> properties) {
     this.properties = properties;
   }
 }

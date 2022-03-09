@@ -1,7 +1,7 @@
-package object.store.entities;
+package object.store.daos.entities;
 
 import java.util.List;
-import object.store.entities.models.KeyDefinition;
+import object.store.daos.entities.models.KeyDefinitionModel;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,7 +14,7 @@ public class TypeDocument {
   @Indexed(unique = true)
   private String name;
   private boolean hasAdditionalProperties;
-  private List<KeyDefinition> backendKeyDefinitions;
+  private List<KeyDefinitionModel> backendKeyDefinitions;
 
   public String getId() {
     return id;
@@ -40,11 +40,11 @@ public class TypeDocument {
     this.hasAdditionalProperties = hasAdditionalProperties;
   }
 
-  public List<KeyDefinition> getBackendKeyDefinitions() {
+  public List<KeyDefinitionModel> getBackendKeyDefinitions() {
     return backendKeyDefinitions;
   }
 
-  public void setBackendKeyDefinitions(List<KeyDefinition> backendKeyDefinitions) {
+  public void setBackendKeyDefinitions(List<KeyDefinitionModel> backendKeyDefinitions) {
     this.backendKeyDefinitions = backendKeyDefinitions;
   }
 }

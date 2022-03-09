@@ -11,24 +11,24 @@ import reactor.core.publisher.Mono;
 public record TypeService(TypeDao typeDao, TypeMapper mapper) {
 
   public Mono<Type> getById(String id) {
-    return typeDao.getById(id).map(mapper::entityToApi);
+    return typeDao.getById(id).map(mapper::dtoToApi);
   }
 
   public Mono<Type> getByName(String name) {
-    return typeDao.getByName(name).map(mapper::entityToApi);
+    return typeDao.getByName(name).map(mapper::dtoToApi);
   }
 
   public Mono<Flux<Type>> getAll() {
-    return Mono.just(typeDao.getAll().map(mapper::entityToApi));
+    return Mono.just(typeDao.getAll().map(mapper::dtoToApi));
   }
 
   public Mono<Type> createType(Type document) {
-    return typeDao.createType(mapper.apiToEntity(document)).flatMap(typeDao::createCollectionForType)
-        .map(mapper::entityToApi);
+    return typeDao.createType(mapper.apiToDto(document)).flatMap(typeDao::createCollectionForType)
+        .map(mapper::dtoToApi);
   }
 
   public Mono<Type> updateById(Type document) {
-    return typeDao.updateTypeById(mapper.apiToEntity(document)).map(mapper::entityToApi);
+    return typeDao.updateTypeById(mapper.apiToDto(document)).map(mapper::dtoToApi);
   }
 
   public Mono<Void> delete(String id) {
