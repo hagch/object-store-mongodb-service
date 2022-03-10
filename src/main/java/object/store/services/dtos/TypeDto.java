@@ -13,7 +13,7 @@ public class TypeDto {
   private String id;
   @Indexed(unique = true)
   private String name;
-  private boolean hasAdditionalProperties;
+  private Boolean additionalProperties;
   private List<KeyDefinitionDto> backendKeyDefinitions;
 
   public String getId() {
@@ -32,12 +32,12 @@ public class TypeDto {
     this.name = name;
   }
 
-  public boolean isHasAdditionalProperties() {
-    return hasAdditionalProperties;
+  public boolean getAdditionalProperties() {
+    return additionalProperties;
   }
 
-  public void setHasAdditionalProperties(boolean hasAdditionalProperties) {
-    this.hasAdditionalProperties = hasAdditionalProperties;
+  public void setAdditionalProperties(boolean additionalProperties) {
+    this.additionalProperties = additionalProperties;
   }
 
   public List<KeyDefinitionDto> getBackendKeyDefinitions() {

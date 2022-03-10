@@ -10,6 +10,7 @@ public class KeyDefinitionDto {
   private Boolean isNullAble;
   private BackendKeyType primitiveArrayType;
   private List<KeyDefinitionDto> properties;
+  private Boolean additionalProperties;
 
   public String getKey() {
     return key;
@@ -49,5 +50,13 @@ public class KeyDefinitionDto {
 
   public void setProperties(List<KeyDefinitionDto> properties) {
     this.properties = properties;
+  }
+
+  public Boolean getAdditionalProperties() {
+    return additionalProperties;
+  }
+
+  public void setAdditionalProperties(Boolean additionalProperties) {
+    this.additionalProperties = additionalProperties;
   }
 }

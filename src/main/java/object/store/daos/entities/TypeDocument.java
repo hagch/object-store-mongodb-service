@@ -13,7 +13,7 @@ public class TypeDocument {
   private String id;
   @Indexed(unique = true)
   private String name;
-  private boolean hasAdditionalProperties;
+  private Boolean additionalProperties;
   private List<KeyDefinitionModel> backendKeyDefinitions;
 
   public String getId() {
@@ -32,12 +32,12 @@ public class TypeDocument {
     this.name = name;
   }
 
-  public boolean isHasAdditionalProperties() {
-    return hasAdditionalProperties;
+  public Boolean getAdditionalProperties() {
+    return additionalProperties;
   }
 
-  public void setHasAdditionalProperties(boolean hasAdditionalProperties) {
-    this.hasAdditionalProperties = hasAdditionalProperties;
+  public void setAdditionalProperties(Boolean additionalProperties) {
+    this.additionalProperties = additionalProperties;
   }
 
   public List<KeyDefinitionModel> getBackendKeyDefinitions() {

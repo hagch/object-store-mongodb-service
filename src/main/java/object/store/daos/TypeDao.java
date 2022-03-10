@@ -2,12 +2,10 @@ package object.store.daos;
 
 import java.util.Objects;
 import java.util.UUID;
-import object.store.daos.entities.TypeDocument;
 import object.store.mappers.TypeMapper;
 import object.store.repositories.TypeRepository;
 import object.store.services.MongoJsonSchemaService;
 import object.store.services.dtos.TypeDto;
-import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -43,9 +41,9 @@ public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mong
       if (Objects.isNull(type.getBackendKeyDefinitions()) || type.getBackendKeyDefinitions().size() == 0) {
         return Mono.error(new IllegalArgumentException());
       }
-      CollectionOptions options = mongoJsonSchemaService.generateCollectionOptions(type);
-      return mongoTemplate.createCollection(type.getName(), options).thenReturn(type);
-    });
+      return Mono.zip(mongoJsonSchemaService.generateCollectionOptions(type), Mono.just(type));
+    }).flatMap(
+        tuple -> mongoTemplate.createCollection(tuple.getT2().getName(), tuple.getT1()).thenReturn(tuple.getT2()));
   }
 
   public Mono<Void> delete(String id) {
