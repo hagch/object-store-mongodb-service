@@ -5,8 +5,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import object.store.constants.MongoConstants;
-import object.store.gen.mongodbservice.models.BackendKeyDefinition;
 import object.store.gen.mongodbservice.models.BackendKeyType;
+import object.store.gen.mongodbservice.models.PrimitiveDefinition;
 import object.store.gen.mongodbservice.models.Type;
 import object.store.services.TypeService;
 import org.bson.Document;
@@ -100,8 +100,9 @@ public record ObjectsDao(TypeService typeService, ReactiveMongoTemplate mongoTem
 
   private Mono<String> getTypePrimaryKey(Mono<Type> monoType) {
     return monoType.map(Type::getBackendKeyDefinitions)
-        .map(definitions -> definitions.stream().filter(key -> BackendKeyType.PRIMARYKEY.equals(key.getType())).map(
-            BackendKeyDefinition::getKey).findFirst()).mapNotNull(primaryKey -> primaryKey.orElse(null));
+        .map(definitions ->
+            definitions.stream().filter( definition -> definition instanceof PrimitiveDefinition).map( definition -> (PrimitiveDefinition) definition).filter(key -> BackendKeyType.PRIMARYKEY.equals(key.getType())).map(
+            PrimitiveDefinition::getKey).findFirst()).mapNotNull(primaryKey -> primaryKey.orElse(null));
   }
 
   private Map<String, Object> mapIdFieldForEntity(Map<String, Object> object, String idName, boolean generateId) {

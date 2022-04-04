@@ -2,8 +2,8 @@ package object.store.services;
 
 import java.util.ArrayList;
 import java.util.List;
-import object.store.services.dtos.TypeDto;
-import object.store.services.dtos.models.KeyDefinitionDto;
+import object.store.dtos.TypeDto;
+import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategyFactory;
 import org.springframework.data.mongodb.core.CollectionOptions;
 import org.springframework.data.mongodb.core.schema.JsonSchemaProperty;
@@ -27,10 +27,10 @@ public record MongoJsonSchemaService(JsonSchemaPropertyStrategyFactory strategyF
     });
   }
 
-  private Mono<JsonSchemaProperty[]> getSchemaProperties(List<KeyDefinitionDto> backendKeyDefinitionList) {
+  private Mono<JsonSchemaProperty[]> getSchemaProperties(List<BasicBackendDefinitionDto> backendKeyDefinitionList) {
     List<Mono<JsonSchemaProperty>> properties = new ArrayList<>();
-    for (KeyDefinitionDto keyDefinition : backendKeyDefinitionList) {
-      properties.add(strategyFactory.findStrategy(keyDefinition.getType()).getJsonSchemaProperty(keyDefinition));
+    for (BasicBackendDefinitionDto keyDefinition : backendKeyDefinitionList) {
+      properties.add(strategyFactory.findStrategy(keyDefinition).getJsonSchemaProperty(keyDefinition));
     }
     return Flux.concat(properties).collectList().map(list -> new JsonSchemaProperty[0]);
   }

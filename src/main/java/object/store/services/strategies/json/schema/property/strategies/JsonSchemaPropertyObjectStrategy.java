@@ -3,7 +3,9 @@ package object.store.services.strategies.json.schema.property.strategies;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import object.store.services.dtos.models.KeyDefinitionDto;
+import object.store.dtos.models.ArrayDefinitionDto;
+import object.store.dtos.models.BasicBackendDefinitionDto;
+import object.store.dtos.models.ObjectDefinitionDto;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategy;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategyName;
 import org.springframework.context.annotation.Lazy;
@@ -25,10 +27,11 @@ public class JsonSchemaPropertyObjectStrategy implements JsonSchemaPropertyStrat
   }
 
   @Override
-  public Mono<JsonSchemaProperty> getJsonSchemaProperty(KeyDefinitionDto keyDefinitionDto) {
+  public Mono<JsonSchemaProperty> getJsonSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
+    ObjectDefinitionDto dto = (ObjectDefinitionDto) keyDefinitionDto;
     String key = keyDefinitionDto.getKey();
-    if (Objects.nonNull(keyDefinitionDto.getProperties()) && !keyDefinitionDto.getProperties().isEmpty()) {
-      return getObjectSchema(keyDefinitionDto.getProperties(), keyDefinitionDto.getAdditionalProperties(), key);
+    if (Objects.nonNull(dto.getProperties()) && !dto.getProperties().isEmpty()) {
+      return getObjectSchema(dto.getProperties(), dto.getAdditionalProperties(), key);
     }
     return Mono.just(JsonSchemaProperty.object(key));
   }
@@ -38,34 +41,30 @@ public class JsonSchemaPropertyObjectStrategy implements JsonSchemaPropertyStrat
     return JsonSchemaPropertyStrategyName.OBJECT;
   }
 
-  private Mono<JsonSchemaProperty> getSchemaProperty(KeyDefinitionDto keyDefinitionDto) {
+  private Mono<JsonSchemaProperty> getSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
     String key = keyDefinitionDto.getKey();
-    Mono<JsonSchemaProperty> property = switch (keyDefinitionDto.getType()) {
-      case OBJECT -> {
-        if (Objects.nonNull(keyDefinitionDto.getProperties()) && !keyDefinitionDto.getProperties().isEmpty()) {
-          yield getObjectSchema(keyDefinitionDto.getProperties(), keyDefinitionDto.getAdditionalProperties(), key);
-        }
-        yield Mono.just(
-            JsonSchemaProperty.object(key).additionalProperties(keyDefinitionDto.getAdditionalProperties()));
+    if(keyDefinitionDto instanceof ObjectDefinitionDto dto){
+      if (Objects.nonNull(dto.getProperties()) && !dto.getProperties().isEmpty()) {
+        return getObjectSchema(dto.getProperties(), dto.getAdditionalProperties(), key);
       }
-      case ARRAY -> arrayStrategy.getArraySchema(keyDefinitionDto);
-      default -> null;
-    };
-    if (Objects.isNull(property)) {
-      return primitiveStrategy.getJsonSchemaProperty(keyDefinitionDto);
+      return Mono.just(
+          JsonSchemaProperty.object(key).additionalProperties(dto.getAdditionalProperties()));
     }
-    return property;
+    if( keyDefinitionDto instanceof ArrayDefinitionDto dto){
+      return arrayStrategy.getArraySchema(dto);
+    }
+    return primitiveStrategy.getJsonSchemaProperty(keyDefinitionDto);
   }
 
-  public Mono<JsonSchemaProperty[]> getSchemaProperties(List<KeyDefinitionDto> backendKeyDefinitionList) {
+  public Mono<JsonSchemaProperty[]> getSchemaProperties(List<BasicBackendDefinitionDto> backendKeyDefinitionList) {
     List<Mono<JsonSchemaProperty>> properties = new ArrayList<>();
-    for (KeyDefinitionDto keyDefinition : backendKeyDefinitionList) {
+    for (BasicBackendDefinitionDto keyDefinition : backendKeyDefinitionList) {
       properties.add(getSchemaProperty(keyDefinition));
     }
     return Flux.concat(properties).collectList().map(list -> list.toArray(new JsonSchemaProperty[0]));
   }
 
-  public Mono<JsonSchemaProperty> getObjectSchema(List<KeyDefinitionDto> definitionDtos, boolean additionalProperties,
+  public Mono<JsonSchemaProperty> getObjectSchema(List<BasicBackendDefinitionDto> definitionDtos, boolean additionalProperties,
       String key) {
     return getSchemaProperties(definitionDtos).map(properties -> JsonSchemaProperty.object(key)
         .properties(properties).additionalProperties(additionalProperties));

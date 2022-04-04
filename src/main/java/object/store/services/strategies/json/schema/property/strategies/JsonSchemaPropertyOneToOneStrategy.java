@@ -1,6 +1,6 @@
 package object.store.services.strategies.json.schema.property.strategies;
 
-import object.store.services.dtos.models.KeyDefinitionDto;
+import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategy;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategyName;
 import org.springframework.data.mongodb.core.schema.JsonSchemaProperty;
@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public class JsonSchemaPropertyOneToOneStrategy implements JsonSchemaPropertyStrategy {
 
   @Override
-  public Mono<JsonSchemaProperty> getJsonSchemaProperty(KeyDefinitionDto keyDefinitionDto) {
+  public Mono<JsonSchemaProperty> getJsonSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
     return null;
   }
 

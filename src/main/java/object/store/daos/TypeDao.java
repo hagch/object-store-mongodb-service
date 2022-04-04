@@ -5,7 +5,7 @@ import java.util.UUID;
 import object.store.mappers.TypeMapper;
 import object.store.repositories.TypeRepository;
 import object.store.services.MongoJsonSchemaService;
-import object.store.services.dtos.TypeDto;
+import object.store.dtos.TypeDto;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;

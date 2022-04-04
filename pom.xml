@@ -82,6 +82,9 @@
 							<version>1.4.2.Final</version>
 						</path>
 					</annotationProcessorPaths>
+					<source>17</source>
+					<target>17</target>
+					<compilerArgs>--enable-preview</compilerArgs>
 				</configuration>
 			</plugin>
 			<plugin>

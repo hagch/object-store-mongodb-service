@@ -16,8 +16,6 @@ public enum JsonSchemaPropertyStrategyName {
     put(BackendKeyType.DATE, PRIMITIVE);
     put(BackendKeyType.TIMESTAMP, PRIMITIVE);
     put(BackendKeyType.STRING, PRIMITIVE);
-    put(BackendKeyType.OBJECT, OBJECT);
-    put(BackendKeyType.ARRAY, ARRAY);
   }};
 
   public static JsonSchemaPropertyStrategyName getMappedStrategyName(BackendKeyType backendKeyType) {

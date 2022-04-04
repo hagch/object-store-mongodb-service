@@ -15,4 +15,4 @@ echo "Install mongodb service"
 printf "\n"
 echo "Creating environment with docker..."
 echo "Using development configuration ./config/env.dev"
-docker-compose up --build --force-recreate -d
+docker-compose up --build --force-recreate

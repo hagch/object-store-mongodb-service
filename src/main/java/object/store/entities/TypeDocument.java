@@ -1,20 +1,20 @@
-package object.store.services.dtos;
+package object.store.entities;
 
 import java.util.List;
-import object.store.services.dtos.models.KeyDefinitionDto;
+import object.store.entities.models.BasicBackendDefinitionModel;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("types")
-public class TypeDto {
+public class TypeDocument {
 
   @Id
   private String id;
   @Indexed(unique = true)
   private String name;
   private Boolean additionalProperties;
-  private List<KeyDefinitionDto> backendKeyDefinitions;
+  private List<BasicBackendDefinitionModel> backendKeyDefinitions;
 
   public String getId() {
     return id;
@@ -32,19 +32,19 @@ public class TypeDto {
     this.name = name;
   }
 
-  public boolean getAdditionalProperties() {
+  public Boolean getAdditionalProperties() {
     return additionalProperties;
   }
 
-  public void setAdditionalProperties(boolean additionalProperties) {
+  public void setAdditionalProperties(Boolean additionalProperties) {
     this.additionalProperties = additionalProperties;
   }
 
-  public List<KeyDefinitionDto> getBackendKeyDefinitions() {
+  public List<BasicBackendDefinitionModel> getBackendKeyDefinitions() {
     return backendKeyDefinitions;
   }
 
-  public void setBackendKeyDefinitions(List<KeyDefinitionDto> backendKeyDefinitions) {
+  public void setBackendKeyDefinitions(List<BasicBackendDefinitionModel> backendKeyDefinitions) {
     this.backendKeyDefinitions = backendKeyDefinitions;
   }
 }

@@ -1,7 +1,8 @@
 package object.store.services.strategies.json.schema.property.strategies;
 
 import java.util.Objects;
-import object.store.services.dtos.models.KeyDefinitionDto;
+import object.store.dtos.models.ArrayDefinitionDto;
+import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategy;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategyName;
 import org.springframework.context.annotation.Lazy;
@@ -23,8 +24,8 @@ public class JsonSchemaPropertyArrayStrategy implements JsonSchemaPropertyStrate
   }
 
   @Override
-  public Mono<JsonSchemaProperty> getJsonSchemaProperty(KeyDefinitionDto keyDefinitionDto) {
-    return getArraySchema(keyDefinitionDto);
+  public Mono<JsonSchemaProperty> getJsonSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
+    return getArraySchema((ArrayDefinitionDto) keyDefinitionDto);
   }
 
   @Override
@@ -32,7 +33,7 @@ public class JsonSchemaPropertyArrayStrategy implements JsonSchemaPropertyStrate
     return JsonSchemaPropertyStrategyName.ARRAY;
   }
 
-  public Mono<JsonSchemaProperty> getArraySchema(KeyDefinitionDto definition) {
+  public Mono<JsonSchemaProperty> getArraySchema(ArrayDefinitionDto definition) {
     if (Objects.nonNull(definition.getPrimitiveArrayType())) {
       return primitiveStrategy.getJsonSchemaObject(definition.getPrimitiveArrayType())
           .map(object -> JsonSchemaProperty.array(definition.getKey()).items(JsonSchemaObject.string()));

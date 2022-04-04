@@ -2,7 +2,7 @@ package object.store.services.strategies.json.schema.property.strategies;
 
 import object.store.constants.MongoConstants;
 import object.store.gen.mongodbservice.models.BackendKeyType;
-import object.store.services.dtos.models.KeyDefinitionDto;
+import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategy;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategyName;
 import org.springframework.data.mongodb.core.schema.JsonSchemaObject;
@@ -16,8 +16,8 @@ import reactor.core.publisher.Mono;
 public class JsonSchemaPropertyPrimitiveStrategy implements JsonSchemaPropertyStrategy {
 
   @Override
-  public Mono<JsonSchemaProperty> getJsonSchemaProperty(KeyDefinitionDto keyDefinitionDto) {
-    return Mono.justOrEmpty(getSchemaProperty(keyDefinitionDto));
+  public Mono<JsonSchemaProperty> getJsonSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
+    return Mono.justOrEmpty(getSchemaProperty( keyDefinitionDto));
   }
 
   @Override
@@ -25,7 +25,7 @@ public class JsonSchemaPropertyPrimitiveStrategy implements JsonSchemaPropertySt
     return JsonSchemaPropertyStrategyName.PRIMITIVE;
   }
 
-  private JsonSchemaProperty getSchemaProperty(KeyDefinitionDto keyDefinitionDto) {
+  private JsonSchemaProperty getSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
     String key = keyDefinitionDto.getKey();
     return switch (keyDefinitionDto.getType()) {
       case PRIMARYKEY -> JsonSchemaProperty.string(MongoConstants.ID_NAME);
