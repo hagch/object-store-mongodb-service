@@ -1,6 +1,7 @@
 package object.store.services;
 
 import object.store.daos.TypeDao;
+import object.store.dtos.TypeDto;
 import object.store.gen.mongodbservice.models.Type;
 import object.store.mappers.TypeMapper;
 import org.springframework.stereotype.Service;
@@ -33,5 +34,9 @@ public record TypeService(TypeDao typeDao, TypeMapper mapper) {
 
   public Mono<Void> delete(String id) {
     return typeDao.delete(id);
+  }
+
+  public Mono<Type> deleteCollectionByTypeId(String id){
+    return typeDao.getById(id).flatMap(type -> typeDao.deleteCollectionForType(type).thenReturn(mapper.dtoToApi(type)));
   }
 }

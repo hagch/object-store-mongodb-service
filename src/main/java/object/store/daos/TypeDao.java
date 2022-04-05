@@ -46,6 +46,10 @@ public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mong
         tuple -> mongoTemplate.createCollection(tuple.getT2().getName(), tuple.getT1()).thenReturn(tuple.getT2()));
   }
 
+  public Mono<Void> deleteCollectionForType(TypeDto document) {
+    return mongoTemplate.dropCollection(document.getName());
+  }
+
   public Mono<Void> delete(String id) {
     return typeRepository.findById(id).flatMap(document -> Mono.zip(typeRepository.delete(document),
         mongoTemplate.dropCollection(document.getName())).then());
