@@ -15,7 +15,8 @@ public record TypesController(TypeService typeService, TypeMapper mapper) implem
 
   @Override
   public Mono<ResponseEntity<Type>> createType(Mono<Type> type, ServerWebExchange exchange) {
-    return type.flatMap(typeService::createType).map(ResponseEntity::ok);
+    return type.flatMap( typeToCreate -> typeService.createType(mapper.apiToDto(typeToCreate))).map(mapper::dtoToApi
+    ).map(ResponseEntity::ok);
   }
 
   @Override
@@ -25,16 +26,16 @@ public record TypesController(TypeService typeService, TypeMapper mapper) implem
 
   @Override
   public Mono<ResponseEntity<Type>> getTypeById(String id, ServerWebExchange exchange) {
-    return typeService.getById(id).map(ResponseEntity::ok);
+    return typeService.getById(id).map(mapper::dtoToApi).map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Flux<Type>>> getTypes(ServerWebExchange exchange) {
-    return typeService.getAll().map(ResponseEntity::ok);
+    return Mono.just(typeService.getAll().map(mapper::dtoToApi)).map(ResponseEntity::ok);
   }
 
   @Override
   public Mono<ResponseEntity<Type>> updateTypeById(String id, Mono<Type> type, ServerWebExchange exchange) {
-    return type.doOnNext(typeService::updateById).map(ResponseEntity::ok);
+    return type.map(mapper::apiToDto).flatMap(typeService::updateById).map(mapper::dtoToApi).map(ResponseEntity::ok);
   }
 }

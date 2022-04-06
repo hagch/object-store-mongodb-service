@@ -30,7 +30,7 @@ public record MongoJsonSchemaService(JsonSchemaPropertyStrategyFactory strategyF
   private Mono<JsonSchemaProperty[]> getSchemaProperties(List<BasicBackendDefinitionDto> backendKeyDefinitionList) {
     List<Mono<JsonSchemaProperty>> properties = new ArrayList<>();
     for (BasicBackendDefinitionDto keyDefinition : backendKeyDefinitionList) {
-      properties.add(strategyFactory.findStrategy(keyDefinition).getJsonSchemaProperty(keyDefinition));
+      properties.add(strategyFactory.findStrategy(keyDefinition.getType()).getJsonSchemaProperty(keyDefinition));
     }
     return Flux.concat(properties).collectList().map(list -> new JsonSchemaProperty[0]);
   }

@@ -6,7 +6,8 @@ import object.store.gen.mongodbservice.models.BackendKeyType;
  * BasicBackendDefinition
  */
 
-public class BasicBackendDefinitionModel {
+public sealed class BasicBackendDefinitionModel permits ArrayDefinitionModel, ObjectDefinitionModel,
+    PrimitiveBackendDefinitionModel, RelationDefinitionModel{
 
   private String key;
 

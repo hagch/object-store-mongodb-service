@@ -3,7 +3,7 @@ package object.store.dtos.models;
 import java.util.List;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
-public non-sealed class ObjectDefinitionDto extends BasicBackendDefinitionDto{
+public final class ObjectDefinitionDto extends BasicBackendDefinitionDto{
 
   private List<BasicBackendDefinitionDto> properties;
   private Boolean additionalProperties;

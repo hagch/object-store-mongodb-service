@@ -5,7 +5,7 @@ import java.util.Map;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
 public enum JsonSchemaPropertyStrategyName {
-  PRIMITIVE, ARRAY, OBJECT, ONE_TO_MANY, ONE_TO_ONE;
+  PRIMITIVE, ARRAY, OBJECT, RELATION;
 
   private static final Map<BackendKeyType, JsonSchemaPropertyStrategyName> mapping = new HashMap<>() {{
     put(BackendKeyType.PRIMARYKEY, PRIMITIVE);
@@ -16,6 +16,10 @@ public enum JsonSchemaPropertyStrategyName {
     put(BackendKeyType.DATE, PRIMITIVE);
     put(BackendKeyType.TIMESTAMP, PRIMITIVE);
     put(BackendKeyType.STRING, PRIMITIVE);
+    put(BackendKeyType.ARRAY,ARRAY);
+    put(BackendKeyType.OBJECT,OBJECT);
+    put(BackendKeyType.ONETOMANY,RELATION);
+    put(BackendKeyType.ONETOONE,RELATION);
   }};
 
   public static JsonSchemaPropertyStrategyName getMappedStrategyName(BackendKeyType backendKeyType) {

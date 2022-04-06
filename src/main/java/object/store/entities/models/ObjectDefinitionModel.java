@@ -3,7 +3,7 @@ package object.store.entities.models;
 import java.util.List;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
-public class ObjectDefinitionModel extends BasicBackendDefinitionModel {
+public final class ObjectDefinitionModel extends BasicBackendDefinitionModel {
 
   private List<BasicBackendDefinitionModel> properties;
   private Boolean additionalProperties;

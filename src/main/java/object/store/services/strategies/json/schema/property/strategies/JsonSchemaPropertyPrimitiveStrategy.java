@@ -81,16 +81,4 @@ public class JsonSchemaPropertyPrimitiveStrategy implements JsonSchemaPropertySt
       default -> null;
     };
   }
-
-  public Mono<JsonSchemaObject> getJsonSchemaObject(BackendKeyType backendKeyType) {
-    return Mono.justOrEmpty(switch (backendKeyType) {
-      case PRIMARYKEY -> JsonSchemaProperty.string(MongoConstants.ID_NAME);
-      case DATE -> JsonSchemaObject.date();
-      case TIMESTAMP -> JsonSchemaObject.timestamp();
-      case DOUBLE, INTEGER, LONG -> JsonSchemaObject.number();
-      case STRING -> JsonSchemaObject.string();
-      case BOOLEAN -> JsonSchemaObject.bool();
-      default -> null;
-    });
-  }
 }

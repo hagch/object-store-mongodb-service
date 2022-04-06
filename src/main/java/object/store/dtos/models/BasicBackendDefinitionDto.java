@@ -7,7 +7,7 @@ import object.store.gen.mongodbservice.models.BackendKeyType;
  */
 
 public sealed class BasicBackendDefinitionDto permits ArrayDefinitionDto,
-    ObjectDefinitionDto, PrimitiveBackendDefinitionDto {
+    ObjectDefinitionDto, PrimitiveBackendDefinitionDto, RelationDefinitionDto {
 
   private String key;
 

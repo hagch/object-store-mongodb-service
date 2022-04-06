@@ -1,11 +1,13 @@
 package object.store.daos;
 
+import com.mongodb.reactivestreams.client.MongoCollection;
 import java.util.Objects;
 import java.util.UUID;
 import object.store.mappers.TypeMapper;
 import object.store.repositories.TypeRepository;
 import object.store.services.MongoJsonSchemaService;
 import object.store.dtos.TypeDto;
+import org.bson.Document;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -53,5 +55,9 @@ public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mong
   public Mono<Void> delete(String id) {
     return typeRepository.findById(id).flatMap(document -> Mono.zip(typeRepository.delete(document),
         mongoTemplate.dropCollection(document.getName())).then());
+  }
+
+  public Mono<MongoCollection<Document>> getCollectionByName(String name){
+    return mongoTemplate.getCollection(name);
   }
 }

@@ -3,6 +3,7 @@ package object.store.mappers.api;
 import java.util.ArrayList;
 import java.util.List;
 import object.store.dtos.models.PrimitiveBackendDefinitionDto;
+import object.store.dtos.models.RelationDefinitionDto;
 import object.store.gen.mongodbservice.models.ArrayDefinition;
 import object.store.gen.mongodbservice.models.BasicBackendDefinition;
 import object.store.gen.mongodbservice.models.ObjectDefinition;
@@ -10,6 +11,7 @@ import object.store.gen.mongodbservice.models.PrimitiveDefinition;
 import object.store.dtos.models.ArrayDefinitionDto;
 import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.dtos.models.ObjectDefinitionDto;
+import object.store.gen.mongodbservice.models.RelationDefinition;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -30,6 +32,8 @@ public interface KeyDefinitionApiMapper {
             mapDefinitionDtos(casted.getProperties()),casted.getAdditionalProperties());
         case PrimitiveDefinition casted -> new PrimitiveBackendDefinitionDto(casted.getKey(), casted.getIsNullAble(),
             casted.getType());
+        case RelationDefinition casted -> new RelationDefinitionDto(casted.getKey(), casted.getIsNullAble(),
+            casted.getType(),casted.getReferencedTypeId(), casted.getReferenceKey());
         default -> throw new IllegalStateException("Unexpected value: " + definition);
       });
     }

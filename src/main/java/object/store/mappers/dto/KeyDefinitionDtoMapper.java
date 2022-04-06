@@ -7,14 +7,17 @@ import object.store.dtos.models.ArrayDefinitionDto;
 import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.dtos.models.ObjectDefinitionDto;
 import object.store.dtos.models.PrimitiveBackendDefinitionDto;
+import object.store.dtos.models.RelationDefinitionDto;
 import object.store.entities.models.ArrayDefinitionModel;
 import object.store.entities.models.BasicBackendDefinitionModel;
 import object.store.entities.models.ObjectDefinitionModel;
 import object.store.entities.models.PrimitiveBackendDefinitionModel;
+import object.store.entities.models.RelationDefinitionModel;
 import object.store.gen.mongodbservice.models.ArrayDefinition;
 import object.store.gen.mongodbservice.models.BasicBackendDefinition;
 import object.store.gen.mongodbservice.models.ObjectDefinition;
 import object.store.gen.mongodbservice.models.PrimitiveDefinition;
+import object.store.gen.mongodbservice.models.RelationDefinition;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -47,6 +50,12 @@ public interface KeyDefinitionDtoMapper {
           .type(casted.getType())
           .isNullAble(casted.getIsNullAble())
           .key(casted.getKey());
+      case RelationDefinitionDto casted -> new RelationDefinition()
+          .referencedTypeId(casted.getReferencedTypeId())
+          .referenceKey(casted.getReferenceKey())
+          .type(casted.getType())
+          .isNullAble(casted.getIsNullAble())
+          .key(casted.getKey());
       default -> throw new IllegalStateException("Unexpected value: " + definition);
     }).collect(Collectors.toList());
   }
@@ -60,6 +69,8 @@ public interface KeyDefinitionDtoMapper {
          ,mapDefinitionDtosToEntity(casted.getProperties()),casted.getAdditionalProperties());
       case PrimitiveBackendDefinitionDto casted -> new PrimitiveBackendDefinitionModel(casted.getKey(),casted.getIsNullAble()
           ,casted.getType());
+      case RelationDefinitionDto casted -> new RelationDefinitionModel(casted.getKey(), casted.getIsNullAble(),
+          casted.getType(), casted.getReferencedTypeId(), casted.getReferenceKey());
       default -> throw new IllegalStateException("Unexpected value: " + definition);
     }).collect(Collectors.toList());
   }
