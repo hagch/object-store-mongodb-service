@@ -15,8 +15,9 @@ public final class ArrayDefinitionModel extends BasicBackendDefinitionModel {
 
   public ArrayDefinitionModel(String key, Boolean isNullAble,
       BackendKeyType primitiveArrayType,
-      List<BasicBackendDefinitionModel> properties, Boolean additionalProperties, Boolean additionalItems) {
-    super(key, isNullAble, BackendKeyType.ARRAY);
+      List<BasicBackendDefinitionModel> properties, Boolean additionalProperties, Boolean additionalItems,
+      Boolean isUnique) {
+    super(key, isNullAble, BackendKeyType.ARRAY, isUnique);
     this.primitiveArrayType = primitiveArrayType;
     this.properties = properties;
     this.additionalProperties = additionalProperties;

@@ -15,10 +15,13 @@ public sealed class BasicBackendDefinitionDto permits ArrayDefinitionDto,
 
   private BackendKeyType type;
 
-  public BasicBackendDefinitionDto(String key, Boolean isNullAble, BackendKeyType type) {
+  private Boolean isUnique;
+
+  public BasicBackendDefinitionDto(String key, Boolean isNullAble, BackendKeyType type, Boolean isUnique) {
     this.key = key;
     this.isNullAble = isNullAble;
     this.type = type;
+    this.isUnique = isUnique;
   }
 
   public String getKey() {
@@ -43,6 +46,14 @@ public sealed class BasicBackendDefinitionDto permits ArrayDefinitionDto,
 
   public void setType(BackendKeyType type) {
     this.type = type;
+  }
+
+  public Boolean getIsUnique() {
+    return isUnique;
+  }
+
+  public void setIsUnique(Boolean unique) {
+    isUnique = unique;
   }
 }
 

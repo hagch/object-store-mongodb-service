@@ -9,8 +9,8 @@ public final class ObjectDefinitionModel extends BasicBackendDefinitionModel {
   private Boolean additionalProperties;
 
   public ObjectDefinitionModel(String key, Boolean isNullAble,
-      List<BasicBackendDefinitionModel> properties, Boolean additionalProperties) {
-    super(key, isNullAble, BackendKeyType.OBJECT);
+      List<BasicBackendDefinitionModel> properties, Boolean additionalProperties, Boolean isUnique) {
+    super(key, isNullAble, BackendKeyType.OBJECT, isUnique);
     this.properties = properties;
     this.additionalProperties = additionalProperties;
   }

@@ -25,13 +25,13 @@ public interface KeyDefinitionEntityMapper {
     return definitions.stream().map( definition -> switch(definition){
       case ArrayDefinitionModel casted -> new ArrayDefinitionDto(casted.getKey(),casted.getIsNullAble(),
           casted.getPrimitiveArrayType(),mapEntitiesToDtos(casted.getProperties()),
-          casted.getAdditionalProperties(),casted.getAdditionalItems());
+          casted.getAdditionalProperties(),casted.getAdditionalItems(),casted.getIsUnique());
       case ObjectDefinitionModel casted -> new ObjectDefinitionDto(casted.getKey(),casted.getIsNullAble()
-          ,mapEntitiesToDtos(casted.getProperties()),casted.getAdditionalProperties());
+          ,mapEntitiesToDtos(casted.getProperties()),casted.getAdditionalProperties(),casted.getIsUnique());
       case PrimitiveBackendDefinitionModel casted -> new PrimitiveBackendDefinitionDto(casted.getKey(),casted.getIsNullAble()
-          ,casted.getType());
+          ,casted.getType(),casted.getIsUnique());
       case RelationDefinitionModel casted -> new RelationDefinitionDto(casted.getKey(),casted.getIsNullAble()
-          ,casted.getType(), casted.getReferencedTypeId(), casted.getReferenceKey());
+          ,casted.getType(), casted.getReferencedTypeId(), casted.getReferenceKey(),casted.getIsUnique());
       default -> throw new IllegalStateException("Unexpected value: " + definition);
     }).collect(Collectors.toList());
   }

@@ -15,10 +15,13 @@ public sealed class BasicBackendDefinitionModel permits ArrayDefinitionModel, Ob
 
   private BackendKeyType type;
 
-  public BasicBackendDefinitionModel(String key, Boolean isNullAble, BackendKeyType type) {
+  private Boolean isUnique;
+
+  public BasicBackendDefinitionModel(String key, Boolean isNullAble, BackendKeyType type, Boolean isUnique) {
     this.key = key;
     this.isNullAble = isNullAble;
     this.type = type;
+    this.isUnique = isUnique;
   }
 
   public String getKey() {
@@ -43,6 +46,14 @@ public sealed class BasicBackendDefinitionModel permits ArrayDefinitionModel, Ob
 
   public void setType(BackendKeyType type) {
     this.type = type;
+  }
+
+  public Boolean getIsUnique() {
+    return isUnique;
+  }
+
+  public void setIsUnique(Boolean unique) {
+    isUnique = unique;
   }
 }
 

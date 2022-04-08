@@ -8,8 +8,8 @@ import object.store.gen.mongodbservice.models.BackendKeyType;
 
 public final class PrimitiveBackendDefinitionDto extends BasicBackendDefinitionDto {
 
-  public PrimitiveBackendDefinitionDto(String key, Boolean isNullAble, BackendKeyType type) {
-    super(key, isNullAble, type);
+  public PrimitiveBackendDefinitionDto(String key, Boolean isNullAble, BackendKeyType type, Boolean isUnique) {
+    super(key, isNullAble, type, isUnique);
   }
 }
 

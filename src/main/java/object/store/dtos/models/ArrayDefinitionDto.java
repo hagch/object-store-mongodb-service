@@ -15,8 +15,8 @@ public final class ArrayDefinitionDto extends BasicBackendDefinitionDto{
 
   public ArrayDefinitionDto(String key, Boolean isNullAble,
       BackendKeyType primitiveArrayType,
-      List<BasicBackendDefinitionDto> properties, Boolean additionalProperties, Boolean additionalItems) {
-    super(key, isNullAble, BackendKeyType.ARRAY);
+      List<BasicBackendDefinitionDto> properties, Boolean additionalProperties, Boolean additionalItems, Boolean isUnique) {
+    super(key, isNullAble, BackendKeyType.ARRAY, isUnique);
     this.primitiveArrayType = primitiveArrayType;
     this.properties = properties;
     this.additionalProperties = additionalProperties;

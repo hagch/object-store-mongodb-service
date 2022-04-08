@@ -8,8 +8,8 @@ public final class RelationDefinitionModel extends BasicBackendDefinitionModel {
   private String referenceKey;
 
   public RelationDefinitionModel(String key, Boolean isNullAble, BackendKeyType type, String referencedTypeId,
-      String referenceKey) {
-    super(key, isNullAble, type);
+      String referenceKey, Boolean isUnique) {
+    super(key, isNullAble, type, isUnique);
     this.referencedTypeId = referencedTypeId;
     this.referenceKey = referenceKey;
   }

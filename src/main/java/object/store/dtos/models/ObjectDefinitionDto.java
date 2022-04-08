@@ -9,8 +9,8 @@ public final class ObjectDefinitionDto extends BasicBackendDefinitionDto{
   private Boolean additionalProperties;
 
   public ObjectDefinitionDto(String key, Boolean isNullAble,
-      List<BasicBackendDefinitionDto> properties, Boolean additionalProperties) {
-    super(key, isNullAble, BackendKeyType.OBJECT);
+      List<BasicBackendDefinitionDto> properties, Boolean additionalProperties, Boolean isUnique) {
+    super(key, isNullAble, BackendKeyType.OBJECT, isUnique);
     this.properties = properties;
     this.additionalProperties = additionalProperties;
   }

@@ -27,13 +27,13 @@ public interface KeyDefinitionApiMapper {
       dtos.add(switch(definition){
         case ArrayDefinition casted -> new ArrayDefinitionDto(casted.getKey(), casted.getIsNullAble(),
             casted.getPrimitiveArrayType(),mapDefinitionDtos(casted.getProperties()),
-            casted.getAdditionalProperties(),casted.getAdditionalItems());
+            casted.getAdditionalProperties(),casted.getAdditionalItems(), casted.getIsUnique());
         case ObjectDefinition casted -> new ObjectDefinitionDto(casted.getKey(),casted.getIsNullAble(),
-            mapDefinitionDtos(casted.getProperties()),casted.getAdditionalProperties());
+            mapDefinitionDtos(casted.getProperties()),casted.getAdditionalProperties(),casted.getIsUnique());
         case PrimitiveDefinition casted -> new PrimitiveBackendDefinitionDto(casted.getKey(), casted.getIsNullAble(),
-            casted.getType());
+            casted.getType(),casted.getIsUnique());
         case RelationDefinition casted -> new RelationDefinitionDto(casted.getKey(), casted.getIsNullAble(),
-            casted.getType(),casted.getReferencedTypeId(), casted.getReferenceKey());
+            casted.getType(),casted.getReferencedTypeId(), casted.getReferenceKey(),casted.getIsUnique());
         default -> throw new IllegalStateException("Unexpected value: " + definition);
       });
     }

@@ -131,6 +131,7 @@ public record ObjectsDao(TypeService typeService, ReactiveMongoTemplate mongoTem
   private Mono<Map<String,Object>> validateObject(Flux<BasicBackendDefinitionDto> definitions,
       Map<String,Object> object){
     return definitions.filter( def -> typesToCheck.contains(def.getType())).flatMap( definitionToCheck -> {
+      // TODO ADD POSTGRES Solution
       RelationDefinitionDto definition = (RelationDefinitionDto) definitionToCheck;
       if(Objects.isNull(object.get(definition.getKey()))){
         return Mono.empty();
