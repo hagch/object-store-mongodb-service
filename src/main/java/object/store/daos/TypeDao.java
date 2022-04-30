@@ -8,6 +8,13 @@ import java.util.UUID;
 import object.store.dtos.models.ArrayDefinitionDto;
 import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.dtos.models.ObjectDefinitionDto;
+import object.store.exceptions.CollectionCreationFailed;
+import object.store.exceptions.CollectionNotFound;
+import object.store.exceptions.CollectionOptionsGenerationFailed;
+import object.store.exceptions.TypeNotFoundById;
+import object.store.exceptions.TypeNotFoundByName;
+import object.store.exceptions.TypeWithoutDefinitionsNotSupported;
+import object.store.gen.mongodbservice.models.BackendKeyType;
 import object.store.mappers.TypeMapper;
 import object.store.repositories.TypeRepository;
 import object.store.services.MongoJsonSchemaService;
@@ -19,6 +26,7 @@ import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 
 @Service
 public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mongoJsonSchemaService,
@@ -29,11 +37,11 @@ public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mong
   }
 
   public Mono<TypeDto> getById(String id) {
-    return typeRepository.findById(id).map(mapper::entityToDto);
+    return typeRepository.findById(id).switchIfEmpty(Mono.error(new TypeNotFoundById(id))).map(mapper::entityToDto);
   }
 
   public Mono<TypeDto> getByName(String name) {
-    return typeRepository.findByName(name).map(mapper::entityToDto);
+    return typeRepository.findByName(name).switchIfEmpty(Mono.error(new TypeNotFoundByName(name))).map(mapper::entityToDto);
   }
 
   public Mono<TypeDto> createType(TypeDto document) {
@@ -48,37 +56,38 @@ public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mong
   public Mono<TypeDto> createCollectionForType(TypeDto document) {
     return Mono.just(document).flatMap(type -> {
       if (Objects.isNull(type.getBackendKeyDefinitions()) || type.getBackendKeyDefinitions().size() == 0) {
-        return Mono.error(new IllegalArgumentException());
+        return Mono.error(new TypeWithoutDefinitionsNotSupported(type.getName()));
       }
-      return Mono.zip(mongoJsonSchemaService.generateCollectionOptions(type), Mono.just(type));
+      return mongoJsonSchemaService.generateCollectionOptions(type)
+          .switchIfEmpty(Mono.error(new CollectionOptionsGenerationFailed()))
+          .map( collectionOptions -> Tuples.of(collectionOptions,type));
     }).flatMap(
-        tuple -> mongoTemplate.createCollection(tuple.getT2().getName(), tuple.getT1()).thenReturn(tuple.getT2())
+        tuple -> mongoTemplate.createCollection(tuple.getT2().getName(), tuple.getT1())
+            .switchIfEmpty(Mono.error(new CollectionCreationFailed()))
+            .thenReturn(tuple.getT2())
     )
         .flatMap(typeDto ->
             createIndexes(Flux.fromIterable(typeDto.getBackendKeyDefinitions()),typeDto.getName()).thenReturn(typeDto)
             );
   }
 
-  public Mono<Void> deleteCollectionForType(TypeDto document) {
-    return mongoTemplate.dropCollection(document.getName());
-  }
-
   public Mono<Void> delete(String id) {
-    return typeRepository.findById(id).flatMap(document -> Mono.zip(typeRepository.delete(document),
+    return typeRepository.findById(id).switchIfEmpty(Mono.error(new TypeNotFoundById(id))).flatMap(document -> Mono.zip(typeRepository.delete(document),
         mongoTemplate.dropCollection(document.getName())).then());
   }
 
   public Mono<MongoCollection<Document>> getCollectionByName(String name){
-    return mongoTemplate.getCollection(name);
+    return mongoTemplate.getCollection(name).switchIfEmpty(Mono.error(new CollectionNotFound(
+        name)));
   }
 
   private Mono<List<String>> createIndexes(Flux<BasicBackendDefinitionDto> definitionDtoFlux, String collectionName){
-    return definitionDtoFlux.collectList()
+    return definitionDtoFlux.filter(dto -> !BackendKeyType.PRIMARYKEY.equals(dto.getType())).collectList()
         .flatMapMany( definitions -> Flux.fromIterable(getUniqueConstraintList(definitions)))
         .flatMap( definition -> mongoTemplate
             .indexOps(collectionName)
             .ensureIndex(new Index(definition.getKey(),Direction.ASC).unique()))
-        .collectList().log();
+        .collectList();
   }
 
   private List<BasicBackendDefinitionDto> getUniqueConstraintList(

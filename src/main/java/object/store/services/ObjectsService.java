@@ -1,6 +1,7 @@
 package object.store.services;
 
 import com.mongodb.BasicDBObject;
+import com.mongodb.client.result.DeleteResult;
 import java.util.Map;
 import java.util.Objects;
 import object.store.constants.MongoConstants;
@@ -23,6 +24,14 @@ public record ObjectsService(ObjectsDao objectsDao) {
     return switch (identifierType) {
       case NAMES -> objectsDao.createObjectByTypeName(identifier, object);
       case IDS -> objectsDao.createObjectByTypeId(identifier, object);
+    };
+  }
+
+  public Mono<DeleteResult> deleteObjectByTypeIdentifier(Identifier identifierType, String identifier,
+      String objectId) {
+    return switch (identifierType) {
+      case NAMES -> objectsDao.deleteObjectByTypeName(identifier, objectId);
+      case IDS -> objectsDao.deleteObjectByTypeId(identifier, objectId);
     };
   }
 

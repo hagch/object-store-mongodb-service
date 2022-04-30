@@ -21,7 +21,7 @@ public record TypesController(TypeService typeService, TypeMapper mapper) implem
 
   @Override
   public Mono<ResponseEntity<Void>> deleteType(String id, ServerWebExchange exchange) {
-    return typeService.deleteCollectionByTypeId(id).flatMap( type -> typeService.delete(type.getId())).map(ResponseEntity::ok);
+    return typeService.delete(id).map(ResponseEntity::ok);
   }
 
   @Override
