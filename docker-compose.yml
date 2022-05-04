@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.4"
 services:
     mongodb:
         image: mongo
@@ -9,6 +9,10 @@ services:
             - MONGO_DB_PASSWORD=sw55amp
         ports:
             - "27017:27017"
+        healthcheck:
+            test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u mongo -p sw55amp --quiet) -eq 1
+            interval: 10s
+            start_period: 30s
     mongo-express:
         image: mongo-express
         container_name: mongo-express
@@ -32,7 +36,7 @@ services:
         links:
             - "mongodb"
         depends_on:
-            -   "mongodb"
+            - "mongodb"
         ports:
             - "8080:8080"
         environment:
