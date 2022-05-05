@@ -2,6 +2,7 @@ package object.store.services;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import object.store.daos.TypeDao;
@@ -14,6 +15,7 @@ import object.store.exceptions.CollectionNotFound;
 import object.store.exceptions.ReferencedKeyDontExistsFromType;
 import object.store.exceptions.TypeNotFoundById;
 import object.store.exceptions.TypeNotFoundByName;
+import object.store.exceptions.WrongTypeId;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 import object.store.gen.mongodbservice.models.Type;
 import object.store.mappers.TypeMapper;
@@ -43,8 +45,11 @@ public record TypeService(TypeDao typeDao, TypeMapper mapper) {
     return validateTypeReferences(document).flatMap(typeDao::createType).flatMap(typeDao::createCollectionForType);
   }
 
-  public Mono<TypeDto> updateById(TypeDto document) {
-    return validateTypeReferences(document).flatMap(typeDao::updateTypeById);
+  public Mono<TypeDto> updateType(String typeId, TypeDto document, List<Map<String,Object>> objects) {
+    if(!Objects.equals(typeId, document.getId())){
+      return Mono.error(new WrongTypeId());
+    }
+    return typeDao.updateType(document,objects);
   }
 
   public Mono<Void> delete(String id) {

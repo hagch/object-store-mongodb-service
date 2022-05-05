@@ -1,13 +1,19 @@
 package object.store.daos;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import javax.transaction.Transactional;
+import object.store.constants.MongoConstants;
 import object.store.dtos.models.ArrayDefinitionDto;
 import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.dtos.models.ObjectDefinitionDto;
+import object.store.dtos.models.PrimitiveBackendDefinitionDto;
+import object.store.dtos.models.RelationDefinitionDto;
 import object.store.exceptions.CollectionCreationFailed;
 import object.store.exceptions.CollectionNotFound;
 import object.store.exceptions.CollectionOptionsGenerationFailed;
@@ -19,6 +25,7 @@ import object.store.mappers.TypeMapper;
 import object.store.repositories.TypeRepository;
 import object.store.services.MongoJsonSchemaService;
 import object.store.dtos.TypeDto;
+import object.store.services.UtilsService;
 import org.bson.Document;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -30,7 +37,7 @@ import reactor.util.function.Tuples;
 
 @Service
 public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mongoJsonSchemaService,
-                      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper) {
+                      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper, UtilsService utilsService) {
 
   public Flux<TypeDto> getAll() {
     return typeRepository.findAll().map(mapper::entityToDto);
@@ -49,8 +56,16 @@ public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mong
     return typeRepository.save(mapper.dtoToEntity(document)).map(mapper::entityToDto);
   }
 
-  public Mono<TypeDto> updateTypeById(TypeDto document) {
-    return typeRepository.save(mapper.dtoToEntity(document)).map(mapper::entityToDto);
+  @Transactional
+  public Mono<TypeDto> updateType(TypeDto document, List<Map<String,Object>> objects) {
+    return getById(document.getId())
+        .flatMap(type -> mongoTemplate.dropCollection(type.getName()).thenReturn(type))
+        .flatMap(type -> typeRepository.delete(mapper.dtoToEntity(type)).thenReturn(document))
+        .flatMap(this::createCollectionForType)
+        .flatMap(type -> typeRepository.save(mapper.dtoToEntity(type)))
+        .flatMap( type -> utilsService.createObjects(mapper.entityToDto(type),Flux.fromIterable(objects),
+                mongoTemplate,this)
+            .thenReturn(mapper.entityToDto(type)));
   }
 
   public Mono<TypeDto> createCollectionForType(TypeDto document) {
