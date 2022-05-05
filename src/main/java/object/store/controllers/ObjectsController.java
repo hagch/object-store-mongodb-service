@@ -5,7 +5,6 @@ import object.store.exceptions.DeleteObjectFailed;
 import object.store.gen.objects.apis.ObjectsApi;
 import object.store.gen.objects.models.Identifier;
 import object.store.services.ObjectsService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
@@ -25,8 +24,8 @@ public record ObjectsController(ObjectsService objectsService) implements Object
   @Override
   public Mono<ResponseEntity<Void>> deleteObjectByTypeIdentifier(Identifier identifierType, String identifier,
       String objectId, ServerWebExchange exchange) {
-    return objectsService.deleteObjectByTypeIdentifier(identifierType, identifier, objectId).flatMap( deleteResult -> {
-      if(deleteResult.wasAcknowledged()){
+    return objectsService.deleteObjectByTypeIdentifier(identifierType, identifier, objectId).flatMap(deleteResult -> {
+      if (deleteResult.wasAcknowledged()) {
         return Mono.just(deleteResult);
       }
       return Mono.error(new DeleteObjectFailed(objectId));

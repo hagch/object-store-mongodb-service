@@ -16,7 +16,7 @@ public record TypesController(TypeService typeService, TypeMapper mapper) implem
 
   @Override
   public Mono<ResponseEntity<Type>> createType(Mono<Type> type, ServerWebExchange exchange) {
-    return type.flatMap( typeToCreate -> typeService.createType(mapper.apiToDto(typeToCreate))).map(mapper::dtoToApi
+    return type.flatMap(typeToCreate -> typeService.createType(mapper.apiToDto(typeToCreate))).map(mapper::dtoToApi
     ).map(ResponseEntity::ok);
   }
 
@@ -38,7 +38,7 @@ public record TypesController(TypeService typeService, TypeMapper mapper) implem
   @Override
   public Mono<ResponseEntity<Type>> updateType(String id, Mono<UpdateType> updateType,
       ServerWebExchange exchange) {
-    return updateType.flatMap( typeUpdate -> typeService.updateType(id,mapper.apiToDto(typeUpdate.getType()),
+    return updateType.flatMap(typeUpdate -> typeService.updateType(id, mapper.apiToDto(typeUpdate.getType()),
         typeUpdate.getObjects())).map(mapper::dtoToApi).map(ResponseEntity::ok);
   }
 }

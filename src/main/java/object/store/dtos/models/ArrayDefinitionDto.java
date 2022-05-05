@@ -3,7 +3,7 @@ package object.store.dtos.models;
 import java.util.List;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
-public final class ArrayDefinitionDto extends BasicBackendDefinitionDto{
+public final class ArrayDefinitionDto extends BasicBackendDefinitionDto {
 
   private BackendKeyType primitiveArrayType;
 
@@ -15,7 +15,8 @@ public final class ArrayDefinitionDto extends BasicBackendDefinitionDto{
 
   public ArrayDefinitionDto(String key, Boolean isNullAble,
       BackendKeyType primitiveArrayType,
-      List<BasicBackendDefinitionDto> properties, Boolean additionalProperties, Boolean additionalItems, Boolean isUnique) {
+      List<BasicBackendDefinitionDto> properties, Boolean additionalProperties, Boolean additionalItems,
+      Boolean isUnique) {
     super(key, isNullAble, BackendKeyType.ARRAY, isUnique);
     this.primitiveArrayType = primitiveArrayType;
     this.properties = properties;

@@ -1,7 +1,6 @@
 package object.store.services.strategies.json.schema.property.strategies;
 
 import object.store.constants.MongoConstants;
-import object.store.gen.mongodbservice.models.BackendKeyType;
 import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategy;
 import object.store.services.strategies.json.schema.property.JsonSchemaPropertyStrategyName;
@@ -17,7 +16,7 @@ public class JsonSchemaPropertyPrimitiveStrategy implements JsonSchemaPropertySt
 
   @Override
   public Mono<JsonSchemaProperty> getJsonSchemaProperty(BasicBackendDefinitionDto keyDefinitionDto) {
-    return Mono.justOrEmpty(getSchemaProperty( keyDefinitionDto));
+    return Mono.justOrEmpty(getSchemaProperty(keyDefinitionDto));
   }
 
   @Override

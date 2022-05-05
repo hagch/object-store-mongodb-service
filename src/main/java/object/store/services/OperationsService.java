@@ -4,17 +4,9 @@ package object.store.services;
 import static object.store.gen.mongodbservice.models.OperationDefinition.OperationTypeEnum.CREATE;
 import static object.store.gen.mongodbservice.models.OperationDefinition.OperationTypeEnum.UPDATE;
 
-import com.mongodb.client.result.DeleteResult;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Supplier;
-import object.store.dtos.TypeDto;
 import object.store.exceptions.DeleteObjectFailed;
-import object.store.exceptions.NoOperationExecuted;
 import object.store.exceptions.OperationNotSupported;
-import object.store.gen.mongodbservice.models.BackendKeyType;
 import object.store.gen.mongodbservice.models.CreateUpdateOperationDefinition;
 import object.store.gen.mongodbservice.models.DeleteOperationDefinition;
 import object.store.gen.mongodbservice.models.OperationDefinition;
@@ -30,9 +22,10 @@ public record OperationsService(ObjectsService objectsService, TypeService typeS
   @Transactional
   public Mono<List<Object>> handleOperations(Flux<OperationDefinition> fluxOperations) {
     return fluxOperations.flatMap(operation -> switch (operation) {
-      case CreateUpdateOperationDefinition casted && CREATE.equals(casted.getOperationType()) -> objectsService.createObjectByTypeIdentifier(
-          Identifier.IDS, operation.getTypeReferenceId(),
-          Mono.just(casted.getObject()));
+      case CreateUpdateOperationDefinition casted && CREATE.equals(casted.getOperationType()) ->
+          objectsService.createObjectByTypeIdentifier(
+              Identifier.IDS, operation.getTypeReferenceId(),
+              Mono.just(casted.getObject()));
       case DeleteOperationDefinition casted -> objectsService.deleteObjectByTypeIdentifier(Identifier.IDS,
               operation.getTypeReferenceId(), casted.getObjectId())
           .flatMap(deleteResult -> {
@@ -41,7 +34,8 @@ public record OperationsService(ObjectsService objectsService, TypeService typeS
             }
             return Mono.error(new DeleteObjectFailed(casted.getObjectId()));
           });
-      case CreateUpdateOperationDefinition casted && UPDATE.equals(casted.getOperationType()) -> objectsService.updateObjectByTypeIdentifier(Identifier.IDS,
+      case CreateUpdateOperationDefinition casted && UPDATE.equals(casted.getOperationType()) ->
+          objectsService.updateObjectByTypeIdentifier(Identifier.IDS,
               operation.getTypeReferenceId(),
               Mono.just(casted.getObject()));
       default -> Mono.error(new OperationNotSupported(operation.toString()));

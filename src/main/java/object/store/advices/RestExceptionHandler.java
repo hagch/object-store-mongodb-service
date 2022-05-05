@@ -12,12 +12,12 @@ import reactor.core.publisher.Mono;
 public class RestExceptionHandler {
 
   @ExceptionHandler(NotFound.class)
-  Mono<ResponseEntity<NotFound>> notFound(NotFound exception){
+  Mono<ResponseEntity<NotFound>> notFound(NotFound exception) {
     return Mono.just(ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception));
   }
 
   @ExceptionHandler(InternalServerError.class)
-  Mono<ResponseEntity<InternalServerError>> internalError(InternalServerError exception){
+  Mono<ResponseEntity<InternalServerError>> internalError(InternalServerError exception) {
     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception));
   }
 }

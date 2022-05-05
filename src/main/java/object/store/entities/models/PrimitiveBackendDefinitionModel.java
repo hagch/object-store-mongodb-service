@@ -1,6 +1,5 @@
 package object.store.entities.models;
 
-import object.store.dtos.models.BasicBackendDefinitionDto;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
 /**

@@ -3,6 +3,7 @@ package object.store.entities.models;
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
 public final class RelationDefinitionModel extends BasicBackendDefinitionModel {
+
   private String referencedTypeId;
 
   private String referenceKey;

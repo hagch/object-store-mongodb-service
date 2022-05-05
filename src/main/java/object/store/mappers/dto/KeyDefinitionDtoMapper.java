@@ -1,6 +1,5 @@
 package object.store.mappers.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import object.store.dtos.models.ArrayDefinitionDto;
@@ -23,16 +22,16 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface KeyDefinitionDtoMapper {
 
-  default BasicBackendDefinition mapDtoToApi(BasicBackendDefinitionDto basicBackendDefinition){
+  default BasicBackendDefinition mapDtoToApi(BasicBackendDefinitionDto basicBackendDefinition) {
     return mapDefinitionDtosToApi(List.of(basicBackendDefinition)).get(0);
   }
 
-  default BasicBackendDefinitionModel mapDtoToEntity(BasicBackendDefinitionDto basicBackendDefinition){
+  default BasicBackendDefinitionModel mapDtoToEntity(BasicBackendDefinitionDto basicBackendDefinition) {
     return mapDefinitionDtosToEntity(List.of(basicBackendDefinition)).get(0);
   }
 
-  private List<BasicBackendDefinition> mapDefinitionDtosToApi(List<BasicBackendDefinitionDto> definitions){
-    return definitions.stream().map( definition -> switch(definition){
+  private List<BasicBackendDefinition> mapDefinitionDtosToApi(List<BasicBackendDefinitionDto> definitions) {
+    return definitions.stream().map(definition -> switch (definition) {
       case ArrayDefinitionDto casted -> new ArrayDefinition().properties(mapDefinitionDtosToApi(casted.getProperties()))
           .primitiveArrayType(casted.getPrimitiveArrayType())
           .additionalItems(casted.getAdditionalItems())
@@ -64,17 +63,18 @@ public interface KeyDefinitionDtoMapper {
     }).collect(Collectors.toList());
   }
 
-  private List<BasicBackendDefinitionModel> mapDefinitionDtosToEntity(List<BasicBackendDefinitionDto> definitions){
-    return definitions.stream().map( definition -> switch(definition){
-      case ArrayDefinitionDto casted -> new ArrayDefinitionModel(casted.getKey(),casted.getIsNullAble(),
-          casted.getPrimitiveArrayType(),mapDefinitionDtosToEntity(casted.getProperties()),
-          casted.getAdditionalProperties(),casted.getAdditionalItems(),casted.getIsUnique());
-      case ObjectDefinitionDto casted -> new ObjectDefinitionModel(casted.getKey(),casted.getIsNullAble()
-         ,mapDefinitionDtosToEntity(casted.getProperties()),casted.getAdditionalProperties(),casted.getIsUnique());
-      case PrimitiveBackendDefinitionDto casted -> new PrimitiveBackendDefinitionModel(casted.getKey(),casted.getIsNullAble()
-          ,casted.getType(),casted.getIsUnique());
+  private List<BasicBackendDefinitionModel> mapDefinitionDtosToEntity(List<BasicBackendDefinitionDto> definitions) {
+    return definitions.stream().map(definition -> switch (definition) {
+      case ArrayDefinitionDto casted -> new ArrayDefinitionModel(casted.getKey(), casted.getIsNullAble(),
+          casted.getPrimitiveArrayType(), mapDefinitionDtosToEntity(casted.getProperties()),
+          casted.getAdditionalProperties(), casted.getAdditionalItems(), casted.getIsUnique());
+      case ObjectDefinitionDto casted -> new ObjectDefinitionModel(casted.getKey(), casted.getIsNullAble()
+          , mapDefinitionDtosToEntity(casted.getProperties()), casted.getAdditionalProperties(), casted.getIsUnique());
+      case PrimitiveBackendDefinitionDto casted ->
+          new PrimitiveBackendDefinitionModel(casted.getKey(), casted.getIsNullAble()
+              , casted.getType(), casted.getIsUnique());
       case RelationDefinitionDto casted -> new RelationDefinitionModel(casted.getKey(), casted.getIsNullAble(),
-          casted.getType(), casted.getReferencedTypeId(), casted.getReferenceKey(),casted.getIsUnique());
+          casted.getType(), casted.getReferencedTypeId(), casted.getReferenceKey(), casted.getIsUnique());
       default -> throw new IllegalStateException("Unexpected value: " + definition);
     }).collect(Collectors.toList());
   }

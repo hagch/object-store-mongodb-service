@@ -2,7 +2,8 @@ package object.store.dtos.models;
 
 import object.store.gen.mongodbservice.models.BackendKeyType;
 
-public final class RelationDefinitionDto extends BasicBackendDefinitionDto{
+public final class RelationDefinitionDto extends BasicBackendDefinitionDto {
+
   private String referencedTypeId;
 
   private String referenceKey;
