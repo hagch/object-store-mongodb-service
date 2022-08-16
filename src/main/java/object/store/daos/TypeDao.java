@@ -32,8 +32,23 @@ import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
 
 @Service
-public record TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mongoJsonSchemaService,
-                      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper, UtilsService utilsService) {
+public class TypeDao {
+
+  private final TypeRepository typeRepository;
+  private final MongoJsonSchemaService mongoJsonSchemaService;
+
+  private final ReactiveMongoTemplate mongoTemplate;
+  private final TypeMapper mapper;
+  private final UtilsService utilsService;
+
+  public TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mongoJsonSchemaService,
+      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper, UtilsService utilsService){
+    this.typeRepository = typeRepository;
+    this.mongoJsonSchemaService = mongoJsonSchemaService;
+    this.mongoTemplate = mongoTemplate;
+    this.mapper = mapper;
+    this.utilsService = utilsService;
+  }
 
   public Flux<TypeDto> getAll() {
     return typeRepository.findAll().map(mapper::entityToDto);

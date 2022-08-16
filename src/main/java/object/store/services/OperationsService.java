@@ -17,8 +17,12 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
-public record OperationsService(ObjectsService objectsService, TypeService typeService) {
+public class OperationsService {
 
+  private final ObjectsService objectsService;
+  public OperationsService(ObjectsService objectsService){
+    this.objectsService = objectsService;
+  }
   @Transactional
   public Mono<List<Object>> handleOperations(Flux<OperationDefinition> fluxOperations) {
     return fluxOperations.flatMap(operation -> switch (operation) {
