@@ -12,7 +12,6 @@ import object.store.gen.mongodbservice.models.DeleteOperationDefinition;
 import object.store.gen.mongodbservice.models.OperationDefinition;
 import object.store.gen.objects.models.Identifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -23,7 +22,6 @@ public class OperationsService {
   public OperationsService(ObjectsService objectsService){
     this.objectsService = objectsService;
   }
-  @Transactional
   public Mono<List<Object>> handleOperations(Flux<OperationDefinition> fluxOperations) {
     return fluxOperations.flatMap(operation -> switch (operation) {
       case CreateUpdateOperationDefinition casted && CREATE.equals(casted.getOperationType()) ->

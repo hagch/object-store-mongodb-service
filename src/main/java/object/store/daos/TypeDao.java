@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import javax.transaction.Transactional;
 import object.store.dtos.TypeDto;
 import object.store.dtos.models.ArrayDefinitionDto;
 import object.store.dtos.models.BasicBackendDefinitionDto;
@@ -27,6 +26,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.core.index.Index;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuples;
@@ -69,15 +69,32 @@ public class TypeDao {
   }
 
   @Transactional
-  public Mono<TypeDto> updateType(TypeDto document, List<Map<String, Object>> objects) {
-    return getById(document.getId())
-        .flatMap(type -> mongoTemplate.dropCollection(type.getName()).thenReturn(type))
-        .flatMap(type -> typeRepository.delete(mapper.dtoToEntity(type)).thenReturn(document))
-        .flatMap(this::createCollectionForType)
+  public Mono<TypeDto> updateTypeCreateNewType(TypeDto document, List<Map<String, Object>> objects) {
+    return this.createCollectionForType(document)
         .flatMap(type -> typeRepository.save(mapper.dtoToEntity(type)))
         .flatMap(type -> utilsService.createObjects(mapper.entityToDto(type), Flux.fromIterable(objects),
                 mongoTemplate, this)
             .thenReturn(mapper.entityToDto(type)));
+  }
+
+  public Mono<TypeDto> updateType(TypeDto document, List<Map<String, Object>> objects){
+    return getById(document.getId()).onErrorResume( (error) -> {
+      if(error instanceof TypeNotFoundById){
+        return mongoTemplate.collectionExists(document.getName()).flatMap( (doesExist) -> {
+          Mono<TypeDto> mono = Mono.empty();
+          if(Boolean.TRUE.equals(doesExist)){
+            mono = mongoTemplate.dropCollection(document.getName()).then(Mono.empty());
+          }
+          return mono.switchIfEmpty(this.updateTypeCreateNewType(document,
+              objects));
+        });
+      } else {
+        return Mono.error(error);
+      }
+        })
+        .flatMap(type -> mongoTemplate.dropCollection(type.getName()).thenReturn(type))
+        .flatMap(type -> typeRepository.delete(mapper.dtoToEntity(type)).thenReturn(document))
+        .flatMap(type -> this.updateTypeCreateNewType(type,objects));
   }
 
   public Mono<TypeDto> createCollectionForType(TypeDto document) {

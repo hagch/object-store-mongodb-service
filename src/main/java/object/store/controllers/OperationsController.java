@@ -1,5 +1,6 @@
 package object.store.controllers;
 
+import javax.transaction.Transactional;
 import object.store.gen.mongodbservice.apis.OperationsApi;
 import object.store.gen.mongodbservice.models.OperationDefinition;
 import object.store.mappers.TypeMapper;
@@ -11,11 +12,17 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-public record OperationsController(OperationsService transactionService, TypeMapper mapper) implements OperationsApi {
+public class OperationsController implements OperationsApi {
 
+  private final OperationsService operationsService;
+
+  public OperationsController(OperationsService operationsService){
+    this.operationsService = operationsService;
+  }
   @Override
+  @Transactional
   public Mono<ResponseEntity<Void>> doOperations(Flux<OperationDefinition> transactionOperation,
       ServerWebExchange exchange) {
-    return transactionService.handleOperations(transactionOperation).then().map(ResponseEntity::ok);
+    return operationsService.handleOperations(transactionOperation).then().map(ResponseEntity::ok);
   }
 }

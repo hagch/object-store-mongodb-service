@@ -1,7 +1,7 @@
 version: "3.4"
 services:
     mongodb:
-        image: mongo
+        image: mongo:latest
         container_name: mongodb
         environment:
             - MONGO_INITDB_ROOT_USERNAME=mongo
@@ -10,10 +10,21 @@ services:
             - MONGO_DB_PASSWORD=sw55amp
         ports:
             - "27017:27017"
+        volumes:
+            - ./auth/file.key:/auth/replica.key.mount
+        entrypoint:
+            - bash
+            - -c
+            - |
+                cp /auth/replica.key.mount /auth/replica.key
+                chmod 400 /auth/replica.key
+                chown 999:999 /auth/replica.key
+                exec docker-entrypoint.sh $$@
         healthcheck:
             test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u mongo -p sw55amp --quiet) -eq 1
             interval: 10s
             start_period: 30s
+        command: "mongod --bind_ip_all --replSet replicaSet01 --keyFile /auth/replica.key"
     object-store-db:
         restart: always
         build: ./
@@ -26,12 +37,10 @@ services:
         ports:
             - "8080:8080"
         environment:
-            - SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE=admin
-            - SPRING_DATA_MONGODB_HOST=mongodb
-            - SPRING_DATA_MONGODB_PORT=27017
-            - SPRING_DATA_MONGODB_USERNAME=mongo
-            - SPRING_DATA_MONGODB_PASSWORD=sw55amp
-            - SPRING_DATA_MONGODB_AUTO_INDEX_CREATION=true
+            - SPRING_DATA_MONGODB_AUTHENTICATION-DATABASE=admin
+            - SPRING_DATA_MONGODB_AUTO-INDEX-CREATION=true
+            - SPRING_DATA_MONGODB.DATABASE=OBJECT_STORE
+            - SPRING_DATA_MONGODB_URI=mongodb://mongo:sw55amp@mongodb:27017/?replicaSet=replicaSet01
 networks:
     default:
         external:

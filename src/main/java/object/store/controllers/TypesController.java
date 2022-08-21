@@ -6,14 +6,22 @@ import object.store.gen.mongodbservice.models.UpdateType;
 import object.store.mappers.TypeMapper;
 import object.store.services.TypeService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-public record TypesController(TypeService typeService, TypeMapper mapper) implements TypesApi {
+public class TypesController implements TypesApi {
 
+  private final TypeService typeService;
+
+  private final TypeMapper mapper;
+  public TypesController(TypeService typeService, TypeMapper mapper){
+    this.typeService = typeService;
+    this.mapper = mapper;
+  }
   @Override
   public Mono<ResponseEntity<Type>> createType(Mono<Type> type, ServerWebExchange exchange) {
     return type.flatMap(typeToCreate -> typeService.createType(mapper.apiToDto(typeToCreate))).map(mapper::dtoToApi
