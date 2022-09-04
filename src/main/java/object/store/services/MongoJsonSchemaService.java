@@ -23,15 +23,16 @@ import reactor.core.publisher.Mono;
 public record MongoJsonSchemaService() {
 
   public Mono<CollectionOptions> generateCollectionOptions(TypeDto type) {
-    return Mono.just(getSchemaProperties(type.getBackendKeyDefinitions().toArray(new BasicBackendDefinitionDto[0]))).map(
-        jsonSchemaProperties -> {
-          MongoJsonSchemaBuilder schema = MongoJsonSchema.builder();
-          schema.additionalProperties(type.getAdditionalProperties());
-          schema.properties(jsonSchemaProperties);
-          return CollectionOptions.empty().validator(Validator.schema(schema.build())).strictValidation()
-              .failOnValidationError();
-        }
-    );
+    return Mono.just(getSchemaProperties(type.getBackendKeyDefinitions().toArray(new BasicBackendDefinitionDto[0])))
+        .map(
+            jsonSchemaProperties -> {
+              MongoJsonSchemaBuilder schema = MongoJsonSchema.builder();
+              schema.additionalProperties(type.getAdditionalProperties());
+              schema.properties(jsonSchemaProperties);
+              return CollectionOptions.empty().validator(Validator.schema(schema.build())).strictValidation()
+                  .failOnValidationError();
+            }
+        );
   }
 
   private JsonSchemaProperty[] getSchemaProperties(BasicBackendDefinitionDto[] keyDefinitions) {
@@ -44,7 +45,8 @@ public record MongoJsonSchemaService() {
             yield JsonSchemaProperty.array(definition.getKey())
                 .items(getJsonSchemaObject(arrayDefinition.getPrimitiveArrayType()));
           }
-          yield JsonSchemaProperty.array(definition.getKey()).items(JsonSchemaObject.object().properties(getSchemaProperties(arrayDefinition.getProperties().toArray(new BasicBackendDefinitionDto[0]))));
+          yield JsonSchemaProperty.array(definition.getKey()).items(JsonSchemaObject.object().properties(
+              getSchemaProperties(arrayDefinition.getProperties().toArray(new BasicBackendDefinitionDto[0]))));
         }
         case OBJECT -> defineObject((ObjectDefinitionDto) definition);
         case ONETOMANY, ONETOONE -> JsonSchemaProperty.named(definition.getKey())
@@ -115,7 +117,7 @@ public record MongoJsonSchemaService() {
     };
   }
 
-  private JsonSchemaProperty defineObject(ObjectDefinitionDto definition){
+  private JsonSchemaProperty defineObject(ObjectDefinitionDto definition) {
     if (Objects.nonNull(definition.getProperties()) && !definition.getProperties().isEmpty()) {
       return JsonSchemaProperty.object(definition.getKey())
           .properties(getSchemaProperties(definition.getProperties().toArray(new BasicBackendDefinitionDto[0])))

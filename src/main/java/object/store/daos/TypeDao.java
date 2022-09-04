@@ -42,7 +42,7 @@ public class TypeDao {
   private final UtilsService utilsService;
 
   public TypeDao(TypeRepository typeRepository, MongoJsonSchemaService mongoJsonSchemaService,
-      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper, UtilsService utilsService){
+      ReactiveMongoTemplate mongoTemplate, TypeMapper mapper, UtilsService utilsService) {
     this.typeRepository = typeRepository;
     this.mongoJsonSchemaService = mongoJsonSchemaService;
     this.mongoTemplate = mongoTemplate;
@@ -77,24 +77,24 @@ public class TypeDao {
             .thenReturn(mapper.entityToDto(type)));
   }
 
-  public Mono<TypeDto> updateType(TypeDto document, List<Map<String, Object>> objects){
-    return getById(document.getId()).onErrorResume( (error) -> {
-      if(error instanceof TypeNotFoundById){
-        return mongoTemplate.collectionExists(document.getName()).flatMap( (doesExist) -> {
-          Mono<TypeDto> mono = Mono.empty();
-          if(Boolean.TRUE.equals(doesExist)){
-            mono = mongoTemplate.dropCollection(document.getName()).then(Mono.empty());
+  public Mono<TypeDto> updateType(TypeDto document, List<Map<String, Object>> objects) {
+    return getById(document.getId()).onErrorResume((error) -> {
+          if (error instanceof TypeNotFoundById) {
+            return mongoTemplate.collectionExists(document.getName()).flatMap((doesExist) -> {
+              Mono<TypeDto> mono = Mono.empty();
+              if (Boolean.TRUE.equals(doesExist)) {
+                mono = mongoTemplate.dropCollection(document.getName()).then(Mono.empty());
+              }
+              return mono.switchIfEmpty(this.updateTypeCreateNewType(document,
+                  objects));
+            });
+          } else {
+            return Mono.error(error);
           }
-          return mono.switchIfEmpty(this.updateTypeCreateNewType(document,
-              objects));
-        });
-      } else {
-        return Mono.error(error);
-      }
         })
         .flatMap(type -> mongoTemplate.dropCollection(type.getName()).thenReturn(type))
         .flatMap(type -> typeRepository.delete(mapper.dtoToEntity(type)).thenReturn(document))
-        .flatMap(type -> this.updateTypeCreateNewType(type,objects));
+        .flatMap(type -> this.updateTypeCreateNewType(type, objects));
   }
 
   public Mono<TypeDto> createCollectionForType(TypeDto document) {
@@ -144,12 +144,16 @@ public class TypeDao {
       }
       if (definition instanceof ArrayDefinitionDto casted && Objects.nonNull(casted.getProperties())
           && !casted.getProperties().isEmpty()) {
-        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(def -> new BasicBackendDefinitionDto(definition.getKey().concat(".").concat(def.getKey()),null,null,null)).toList();
+        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(
+            def -> new BasicBackendDefinitionDto(definition.getKey().concat(".").concat(def.getKey()), null, null,
+                null)).toList();
         mappedList.addAll(getUniqueConstraintList(mappedKeys));
       }
       if (definition instanceof ObjectDefinitionDto casted && Objects.nonNull(casted.getProperties())
           && !casted.getProperties().isEmpty()) {
-        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(def -> new BasicBackendDefinitionDto(definition.getKey().concat(".").concat(def.getKey()),null,null,null)).toList();
+        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(
+            def -> new BasicBackendDefinitionDto(definition.getKey().concat(".").concat(def.getKey()), null, null,
+                null)).toList();
         mappedList.addAll(getUniqueConstraintList(mappedKeys));
       }
     }

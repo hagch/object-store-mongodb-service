@@ -16,9 +16,10 @@ public class OperationsController implements OperationsApi {
 
   private final OperationsService operationsService;
 
-  public OperationsController(OperationsService operationsService){
+  public OperationsController(OperationsService operationsService) {
     this.operationsService = operationsService;
   }
+
   @Override
   public Mono<ResponseEntity<Void>> doOperations(Flux<OperationDefinition> transactionOperation,
       ServerWebExchange exchange) {
