@@ -5,13 +5,16 @@ import static object.store.gen.mongodbservice.models.OperationDefinition.Operati
 import static object.store.gen.mongodbservice.models.OperationDefinition.OperationTypeEnum.UPDATE;
 
 import java.util.List;
+import java.util.Objects;
 import object.store.exceptions.DeleteObjectFailed;
 import object.store.exceptions.OperationNotSupported;
 import object.store.gen.mongodbservice.models.CreateUpdateOperationDefinition;
 import object.store.gen.mongodbservice.models.DeleteOperationDefinition;
 import object.store.gen.mongodbservice.models.OperationDefinition;
-import object.store.gen.objects.models.Identifier;
+import org.springframework.data.mongodb.UncategorizedMongoDbException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -22,13 +25,33 @@ public class OperationsService {
   public OperationsService(ObjectsService objectsService){
     this.objectsService = objectsService;
   }
+
+  @Transactional(rollbackFor = {UncategorizedMongoDbException.class})
   public Mono<List<Object>> handleOperations(Flux<OperationDefinition> fluxOperations) {
-    return fluxOperations.flatMap(operation -> switch (operation) {
+    return fluxOperations.collectList().flatMap(operations -> {
+      if(CollectionUtils.isEmpty(operations)){
+        return Mono.empty();
+      }
+      if(operations.size() > 1 ){
+        return determineCall(operations.get(0)).flatMap( returnValue -> {
+          operations.remove(0);
+          return Flux.fromIterable(operations).flatMap(this::determineCall).collectList().map( list -> {
+            list.add(returnValue);
+            return list;
+          });
+        });
+      }
+      return Flux.from(determineCall(operations.get(0))).collectList();
+    });
+  }
+
+  private Mono<Object> determineCall(OperationDefinition operation){
+    return switch (operation) {
       case CreateUpdateOperationDefinition casted && CREATE.equals(casted.getOperationType()) ->
-          objectsService.createObjectByTypeIdentifier(
-              Identifier.IDS, operation.getTypeReferenceId(),
-              Mono.just(casted.getObject()));
-      case DeleteOperationDefinition casted -> objectsService.deleteObjectByTypeIdentifier(Identifier.IDS,
+          objectsService.createObjectByTypeId(
+              operation.getTypeReferenceId(),
+              Mono.just(casted.getObject())).map( value -> (Object) value);
+      case DeleteOperationDefinition casted -> objectsService.deleteObjectByTypeId(
               operation.getTypeReferenceId(), casted.getObjectId())
           .flatMap(deleteResult -> {
             if (deleteResult.wasAcknowledged()) {
@@ -37,10 +60,10 @@ public class OperationsService {
             return Mono.error(new DeleteObjectFailed(casted.getObjectId()));
           });
       case CreateUpdateOperationDefinition casted && UPDATE.equals(casted.getOperationType()) ->
-          objectsService.updateObjectByTypeIdentifier(Identifier.IDS,
+          objectsService.updateObjectById(
               operation.getTypeReferenceId(),
-              Mono.just(casted.getObject()));
+              Mono.just(casted.getObject())).map( value -> (Object) value);
       default -> Mono.error(new OperationNotSupported(operation.toString()));
-    }).collectList();
+    };
   }
 }

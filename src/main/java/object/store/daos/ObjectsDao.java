@@ -10,7 +10,6 @@ import object.store.dtos.TypeDto;
 import object.store.exceptions.CreateObjectFailed;
 import object.store.exceptions.ObjectNotFound;
 import object.store.exceptions.TypeNotFoundById;
-import object.store.exceptions.TypeNotFoundByName;
 import object.store.exceptions.UpdateObjectFailed;
 import object.store.services.TypeService;
 import object.store.services.UtilsService;
@@ -34,37 +33,15 @@ public record ObjectsDao(TypeService typeService, ReactiveMongoTemplate mongoTem
     return document.entrySet().stream().collect(Collectors.toMap(Entry::getKey, Entry::getValue));
   }
 
-  public Mono<DeleteResult> deleteObjectByTypeName(String typeName, String objectId) {
-    return mongoTemplate.remove(Query.query(Criteria.where(MongoConstants.ID_NAME).is(objectId)), typeName);
-  }
-
   public Mono<DeleteResult> deleteObjectByTypeId(String typeId, String objectId) {
     return typeService.getById(typeId)
         .flatMap(type -> mongoTemplate.remove(Query.query(Criteria.where(MongoConstants.ID_NAME).is(objectId)),
             type.getName()));
   }
 
-  public Mono<Map<String, Object>> createObjectByTypeName(String typeName, Mono<Map<String, Object>> object) {
-    Mono<TypeDto> monoType = typeService.getByName(typeName);
-    return createObjectByType(monoType, object);
-  }
-
   public Mono<Map<String, Object>> createObjectByTypeId(String typeId, Mono<Map<String, Object>> object) {
     Mono<TypeDto> monoType = typeService.getById(typeId);
     return createObjectByType(monoType, object);
-  }
-
-  public Mono<Map<String, Object>> getObjectByTypeName(String typeName, String objectId) {
-    return typeService.getByName(typeName)
-        .switchIfEmpty(Mono.error(new TypeNotFoundByName(typeName)))
-        .flatMap(type ->
-            utilsService.getTypePrimaryKey(Mono.just(type))
-                .flatMap(primaryKey -> mongoTemplate.findById(objectId, BasicDBObject.class, typeName)
-                    .switchIfEmpty(Mono.error(new ObjectNotFound(objectId, typeName)))
-                    .map(object -> Tuples.of(primaryKey, object))
-                    .map(ObjectsDao::mapIdFieldForDocument)
-                )
-        );
   }
 
   public Mono<Map<String, Object>> getObjectByTypeId(String typeId, String objectId) {
@@ -78,22 +55,9 @@ public record ObjectsDao(TypeService typeService, ReactiveMongoTemplate mongoTem
     );
   }
 
-  public Mono<Map<String, Object>> updateObjectByTypeName(String typeName, Mono<Map<String, Object>> object) {
-    Mono<TypeDto> monoType = typeService.getByName(typeName);
-    return updateObjectByType(monoType, object);
-  }
-
   public Mono<Map<String, Object>> updateObjectByTypeId(String typeId, Mono<Map<String, Object>> object) {
     Mono<TypeDto> monoType = typeService.getById(typeId);
     return updateObjectByType(monoType, object);
-  }
-
-  public Flux<Map<String, Object>> getAllObjectsByTypeName(String typeName) {
-    Mono<TypeDto> monoType = typeService.getByName(typeName)
-        .switchIfEmpty(Mono.error(new TypeNotFoundByName(typeName)));
-    Mono<String> monoPrimaryKey = utilsService.getTypePrimaryKey(monoType);
-    return monoPrimaryKey.flatMapMany(key -> mongoTemplate.findAll(BasicDBObject.class, typeName)
-        .flatMap(object -> Mono.zip(Mono.just(key), Mono.just(object)))).map(ObjectsDao::mapIdFieldForDocument);
   }
 
   public Flux<Map<String, Object>> getAllObjectsByTypeId(String typeId) {

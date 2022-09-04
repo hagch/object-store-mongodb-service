@@ -3,7 +3,6 @@ package object.store.services;
 import com.mongodb.client.result.DeleteResult;
 import java.util.Map;
 import object.store.daos.ObjectsDao;
-import object.store.gen.objects.models.Identifier;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -11,42 +10,25 @@ import reactor.core.publisher.Mono;
 @Service
 public record ObjectsService(ObjectsDao objectsDao) {
 
-  public Mono<Map<String, Object>> createObjectByTypeIdentifier(Identifier identifierType, String identifier,
+  public Mono<Map<String, Object>> createObjectByTypeId(String id,
       Mono<Map<String, Object>> object) {
-    return switch (identifierType) {
-      case NAMES -> objectsDao.createObjectByTypeName(identifier, object);
-      case IDS -> objectsDao.createObjectByTypeId(identifier, object);
-    };
+    return objectsDao.createObjectByTypeId(id, object);
   }
 
-  public Mono<DeleteResult> deleteObjectByTypeIdentifier(Identifier identifierType, String identifier,
+  public Mono<DeleteResult> deleteObjectByTypeId(String id,
       String objectId) {
-    return switch (identifierType) {
-      case NAMES -> objectsDao.deleteObjectByTypeName(identifier, objectId);
-      case IDS -> objectsDao.deleteObjectByTypeId(identifier, objectId);
-    };
+    return objectsDao.deleteObjectByTypeId(id, objectId);
   }
 
-  public Mono<Map<String, Object>> getObjectByTypeIdentifier(Identifier identifierType,
-      String identifier, String objectId) {
-    return switch (identifierType) {
-      case NAMES -> objectsDao.getObjectByTypeName(identifier, objectId);
-      case IDS -> objectsDao.getObjectByTypeId(identifier, objectId);
-    };
+  public Mono<Map<String, Object>> getObjectByTypeId(String typeId, String objectId) {
+    return objectsDao.getObjectByTypeId(typeId, objectId);
   }
 
-  public Mono<Map<String, Object>> updateObjectByTypeIdentifier(Identifier identifierType,
-      String identifier, Mono<Map<String, Object>> monoObject) {
-    return switch (identifierType) {
-      case NAMES -> objectsDao.updateObjectByTypeName(identifier, monoObject);
-      case IDS -> objectsDao.updateObjectByTypeId(identifier, monoObject);
-    };
+  public Flux<Map<String, Object>> getObjectsByTypeId(String typeId) {
+    return objectsDao.getAllObjectsByTypeId(typeId);
   }
 
-  public Flux<Map<String, Object>> getObjectsByTypeIdentifier(Identifier identifierType, String identifier) {
-    return switch (identifierType) {
-      case NAMES -> objectsDao.getAllObjectsByTypeName(identifier);
-      case IDS -> objectsDao.getAllObjectsByTypeId(identifier);
-    };
+  public Mono<Map<String, Object>> updateObjectById(String typeId, Mono<Map<String, Object>> monoObject) {
+    return objectsDao.updateObjectByTypeId(typeId, monoObject);
   }
 }

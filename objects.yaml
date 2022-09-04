@@ -13,20 +13,15 @@ servers:
     description: Local server
 
 paths:
-  '/types/{identifierType}/{identifier}/objects':
+  '/types/{id}/objects':
     get:
       summary: Get all Objects for specified Type
       tags:
         - objects
-      operationId: getObjectsByTypeIdentifier
+      operationId: getObjectsById
       parameters:
         - in: path
-          name: identifierType
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - in: path
-          name: identifier
+          name: id
           required: true
           schema:
             type: string
@@ -41,15 +36,10 @@ paths:
       summary: Create Object for specified Type
       tags:
         - objects
-      operationId: createObjectByTypeIdentifier
+      operationId: createObjectById
       parameters:
         - in: path
-          name: identifierType
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - in: path
-          name: identifier
+          name: id
           required: true
           schema:
             type: string
@@ -65,20 +55,15 @@ paths:
           description: Unauthorized
         '500':
           description: InternalServerError
-  '/types/{identifierType}/{identifier}/objects/{objectId}':
+  '/types/{id}/objects/{objectId}':
     get:
-      summary: Get Object by typeIdentifier (name or id) and objectId
+      summary: Get Object by type and objectId
       tags:
         - objects
-      operationId: getObjectByTypeIdentifier
+      operationId: getObjectById
       parameters:
         - in: path
-          name: identifierType
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - in: path
-          name: identifier
+          name: id
           required: true
           schema:
             type: string
@@ -95,18 +80,13 @@ paths:
         '500':
           description: InternalServerError
     put:
-      summary: Update Object by typeIdentifier (name or id) and objectId
+      summary: Update Object by type and objectId
       tags:
         - objects
-      operationId: updateObjectByTypeIdentifier
+      operationId: updateObjectById
       parameters:
         - in: path
-          name: identifierType
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - in: path
-          name: identifier
+          name: id
           required: true
           schema:
             type: string
@@ -128,18 +108,13 @@ paths:
         '500':
           description: InternalServerError
     delete:
-      summary: Delete Object by typeIdentifier (name or id) and objectId
+      summary: Delete Object by type and objectId
       tags:
         - objects
-      operationId: deleteObjectByTypeIdentifier
+      operationId: deleteObjectById
       parameters:
         - in: path
-          name: identifierType
-          required: true
-          schema:
-            $ref: '#/components/schemas/Identifier'
-        - in: path
-          name: identifier
+          name: id
           required: true
           schema:
             type: string
@@ -162,11 +137,6 @@ components:
     Object:
       type: object
       additionalProperties: true
-    Identifier:
-      type: string
-      enum:
-        - ids
-        - names
   responses:
     ObjectsResponse:
       description: An array of objects defined by type

@@ -3,7 +3,6 @@ package object.store.controllers;
 import java.util.Map;
 import object.store.exceptions.DeleteObjectFailed;
 import object.store.gen.objects.apis.ObjectsApi;
-import object.store.gen.objects.models.Identifier;
 import object.store.services.ObjectsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,16 +14,14 @@ import reactor.core.publisher.Mono;
 public record ObjectsController(ObjectsService objectsService) implements ObjectsApi {
 
   @Override
-  public Mono<ResponseEntity<Map<String, Object>>> createObjectByTypeIdentifier(Identifier identifierType,
-      String identifier,
-      Mono<Map<String, Object>> requestBody, ServerWebExchange exchange) {
-    return objectsService.createObjectByTypeIdentifier(identifierType, identifier, requestBody).map(ResponseEntity::ok);
+  public Mono<ResponseEntity<Map<String, Object>>> createObjectById(String id, Mono<Map<String, Object>> requestBody,
+      ServerWebExchange exchange) {
+    return objectsService.createObjectByTypeId(id, requestBody).map(ResponseEntity::ok);
   }
 
   @Override
-  public Mono<ResponseEntity<Void>> deleteObjectByTypeIdentifier(Identifier identifierType, String identifier,
-      String objectId, ServerWebExchange exchange) {
-    return objectsService.deleteObjectByTypeIdentifier(identifierType, identifier, objectId).flatMap(deleteResult -> {
+  public Mono<ResponseEntity<Void>> deleteObjectById(String id, String objectId, ServerWebExchange exchange) {
+    return objectsService.deleteObjectByTypeId(id, objectId).flatMap(deleteResult -> {
       if (deleteResult.wasAcknowledged()) {
         return Mono.just(deleteResult);
       }
@@ -33,21 +30,19 @@ public record ObjectsController(ObjectsService objectsService) implements Object
   }
 
   @Override
-  public Mono<ResponseEntity<Map<String, Object>>> getObjectByTypeIdentifier(Identifier identifierType,
-      String identifier, String objectId, ServerWebExchange exchange) {
-    return objectsService.getObjectByTypeIdentifier(identifierType, identifier, objectId).map(ResponseEntity::ok);
-  }
-
-  @Override
-  public Mono<ResponseEntity<Flux<Map<String, Object>>>> getObjectsByTypeIdentifier(Identifier identifierType,
-      String identifier,
+  public Mono<ResponseEntity<Map<String, Object>>> getObjectById(String id, String objectId,
       ServerWebExchange exchange) {
-    return Mono.just(objectsService.getObjectsByTypeIdentifier(identifierType, identifier)).map(ResponseEntity::ok);
+    return objectsService.getObjectByTypeId(id, objectId).map(ResponseEntity::ok);
   }
 
   @Override
-  public Mono<ResponseEntity<Map<String, Object>>> updateObjectByTypeIdentifier(Identifier identifierType,
-      String identifier, String objectId, Mono<Map<String, Object>> requestBody, ServerWebExchange exchange) {
-    return objectsService.updateObjectByTypeIdentifier(identifierType, identifier, requestBody).map(ResponseEntity::ok);
+  public Mono<ResponseEntity<Flux<Map<String, Object>>>> getObjectsById(String id, ServerWebExchange exchange) {
+    return Mono.just(objectsService.getObjectsByTypeId(id)).map(ResponseEntity::ok);
+  }
+
+  @Override
+  public Mono<ResponseEntity<Map<String, Object>>> updateObjectById(String id, String objectId,
+      Mono<Map<String, Object>> requestBody, ServerWebExchange exchange) {
+    return objectsService.updateObjectById(id, requestBody).map(ResponseEntity::ok);
   }
 }

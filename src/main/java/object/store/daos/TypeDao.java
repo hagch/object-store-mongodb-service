@@ -144,18 +144,12 @@ public class TypeDao {
       }
       if (definition instanceof ArrayDefinitionDto casted && Objects.nonNull(casted.getProperties())
           && !casted.getProperties().isEmpty()) {
-        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(def -> {
-          def.setKey(definition.getKey().concat(".").concat(def.getKey()));
-          return def;
-        }).toList();
+        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(def -> new BasicBackendDefinitionDto(definition.getKey().concat(".").concat(def.getKey()),null,null,null)).toList();
         mappedList.addAll(getUniqueConstraintList(mappedKeys));
       }
       if (definition instanceof ObjectDefinitionDto casted && Objects.nonNull(casted.getProperties())
           && !casted.getProperties().isEmpty()) {
-        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(def -> {
-          def.setKey(definition.getKey().concat(".").concat(def.getKey()));
-          return def;
-        }).toList();
+        List<BasicBackendDefinitionDto> mappedKeys = casted.getProperties().stream().map(def -> new BasicBackendDefinitionDto(definition.getKey().concat(".").concat(def.getKey()),null,null,null)).toList();
         mappedList.addAll(getUniqueConstraintList(mappedKeys));
       }
     }
